@@ -1,0 +1,75 @@
+// sudo apt-get install graphviz
+// dot -Tpng mlp.dot -o mlp.png
+// xdot mlp.dot
+digraph MLP
+{
+	label="8-4-3-1-MLP (M-P-Q-N-MLP) Neural Network";
+	fontsize=20;
+	size="2,1";
+	ratio=fill;
+
+	i1     [label="i1"];
+	i2     [label="i2"];
+	i3     [label="i3"];
+	i4     [label="i4"];
+	i5     [label="i5"];
+	i6     [label="i6"];
+	i7     [label="i7"];
+	i8     [label="i8"];
+	h11    [label="h11\nbias=b11\nfact=ReLU"];
+	h12    [label="h12\nbias=b12\nfact=ReLU"];
+	h13    [label="h13\nbias=b13\nfact=ReLU"];
+	h1P    [label="h1P\nbias=b1P\nfact=ReLU"];
+	h21    [label="h21\nbias=b21\nfact=ReLU"];
+	h22    [label="h22\nbias=b22\nfact=ReLU"];
+	h2Q    [label="h2Q\nbias=b2Q\nfact=ReLU"];
+	OmegaN [label="OmegaN\nbias=bN\nfact=Linear"];
+
+	i1  -> h11;
+	i2  -> h11;
+	i3  -> h11;
+	i4  -> h11;
+	i5  -> h11;
+	i6  -> h11;
+	i7  -> h11;
+	i8  -> h11;
+	i1  -> h12;
+	i2  -> h12;
+	i3  -> h12;
+	i4  -> h12;
+	i5  -> h12;
+	i6  -> h12;
+	i7  -> h12;
+	i8  -> h12;
+	i1  -> h13;
+	i2  -> h13;
+	i3  -> h13;
+	i4  -> h13;
+	i5  -> h13;
+	i6  -> h13;
+	i7  -> h13;
+	i8  -> h13;
+	i1  -> h1P;
+	i2  -> h1P;
+	i3  -> h1P;
+	i4  -> h1P;
+	i5  -> h1P;
+	i6  -> h1P;
+	i7  -> h1P;
+	i8  -> h1P;
+	h11 -> h21;
+	h11 -> h22;
+	h11 -> h2Q;
+	h12 -> h21;
+	h12 -> h22;
+	h12 -> h2Q;
+	h13 -> h21;
+	h13 -> h22;
+	h13 -> h2Q;
+	h1P -> h21;
+	h1P -> h22;
+	h1P -> h2Q;
+	h21 -> OmegaN;
+	h22 -> OmegaN;
+	h2Q -> OmegaN;
+}

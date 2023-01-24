@@ -1,0 +1,44 @@
+// sudo apt-get install graphviz
+// dot -Tpng mlp_update.dot -o mlp_update.png
+// xdot mlu_update.dot
+digraph MLP
+{
+	label="MLP Update Layers\nK-H-L or K-Omega";
+	fontsize=20;
+	size="2,1";
+	ratio=fill;
+
+	H_m1 [color=gray, label=" "];
+	H_m2 [color=gray, label=" "];
+	H_m3 [color=gray, label=" "];
+	H_n1 [color=gray, label=" "];
+	H_n2 [color=gray, label=" "];
+	H_n3 [color=gray, label=" "];
+	H_k  [label="k"];
+	H_b  [label="bias"];
+	H_h  [label="h = Hidden\nfact = ReLU\nnet(h) = SUM(k in K)(o(k)*w(k,h)) + b(h)\no(h) = fact(net(h))\ndelta(h) = dfact(net(h))*SUM(l in L)(delta(l)*w(h,l)"];
+	H_l  [label="l"];
+
+	Omega_m1 [color=gray, label=" "];
+	Omega_m2 [color=gray, label=" "];
+	Omega_m3 [color=gray, label=" "];
+	Omega_k  [label="k"];
+	Omega_b  [label="bias"];
+	Omega    [label="h = Omega\nfact = Linear\nnet(h) = SUM(k in K)(o(k)*w(k,h)) + b(h)\no(h) = fact(net(h))\ndelta(h) = dfact(net(h))*(out - o(h))"];
+
+	H_m1 -> H_h  [color=gray];
+	H_m2 -> H_h  [color=gray];
+	H_m3 -> H_h  [color=gray];
+	H_b  -> H_h  [label="b(h) += rate*delta(h)"];
+	H_k  -> H_h  [label="w(k,h) += rate*o(k)*delta(h)"];
+	H_h  -> H_n1 [color=gray];
+	H_h  -> H_n2 [color=gray];
+	H_h  -> H_n3 [color=gray];
+	H_h  -> H_l  [label="w(h,l)"];
+
+	Omega_m1 -> Omega [color=gray];
+	Omega_m2 -> Omega [color=gray];
+	Omega_m3 -> Omega [color=gray];
+	Omega_b  -> Omega [label="b(h) += rate*delta(h)"];
+	Omega_k  -> Omega [label="w(k,h) += rate*o(k)*delta(h)"];
+}
