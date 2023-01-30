@@ -58,12 +58,11 @@ int main(int argc, char** argv)
 		return EXIT_FAILURE;
 	}
 
-	float in0 = 0;
 	char fname[256];
 	char label[256];
 	snprintf(label, 256, "%s", "Init");
 	snprintf(fname, 256, "%s", "out/init.dot");
-	ai_mlp_graph(mlp, &in0, label, fname);
+	ai_mlp_graph(mlp, label, fname);
 
 	FILE* fdat;
 	fdat = fopen("out/output.dat", "w");
@@ -101,7 +100,7 @@ int main(int argc, char** argv)
 		{
 			snprintf(label, 256, "Train%i", i);
 			snprintf(fname, 256, "out/train%i.dot", i);
-			ai_mlp_graph(mlp, &in, label, fname);
+			ai_mlp_graph(mlp, label, fname);
 
 			err = fabs(out - mlp->Omega->o[0]);
 			fprintf(ferr, "%i %f\n", i, err);
@@ -126,6 +125,10 @@ int main(int argc, char** argv)
 
 		err = fabs(out - mlp->Omega->o[0]);
 		fprintf(fdat, "%f %f %f\n", in, out, mlp->Omega->o[0]);
+
+		snprintf(label, 256, "Solve%i", i);
+		snprintf(fname, 256, "out/solve%i.dot", i);
+		ai_mlp_graph(mlp, label, fname);
 
 		LOGD("SOLVE i=%i, in=%f, out=%f, o=%f, err=%f",
 		     i, in, out, mlp->Omega->o[0], err);

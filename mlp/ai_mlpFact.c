@@ -28,9 +28,69 @@
 #include "../../libcc/cc_log.h"
 #include "ai_mlpFact.h"
 
+const char* AI_MLP_FACT_STRING_CUSTOM    = "custom";
+const char* AI_MLP_FACT_STRING_LINEAR    = "linear";
+const char* AI_MLP_FACT_STRING_LOGISTIC  = "logistic";
+const char* AI_MLP_FACT_STRING_RELU      = "ReLU";
+const char* AI_MLP_FACT_STRING_PRELU     = "PReLU";
+const char* AI_MLP_FACT_STRING_TANH      = "tanh";
+const char* AI_MLP_FACT_STRING_DLINEAR   = "dlinear";
+const char* AI_MLP_FACT_STRING_DLOGISTIC = "dlogistic";
+const char* AI_MLP_FACT_STRING_DRELU     = "dReLU";
+const char* AI_MLP_FACT_STRING_DPRELU    = "dPReLU";
+const char* AI_MLP_FACT_STRING_DTANH     = "dtanh";
+
 /***********************************************************
 * public                                                   *
 ***********************************************************/
+
+const char* ai_mlpFact_string(ai_mlpFact_fn fact)
+{
+	// fact may be NULL
+
+	if(fact == ai_mlpFact_linear)
+	{
+		return AI_MLP_FACT_STRING_LINEAR;
+	}
+	else if(fact == ai_mlpFact_logistic)
+	{
+		return AI_MLP_FACT_STRING_LOGISTIC;
+	}
+	else if(fact == ai_mlpFact_ReLU)
+	{
+		return AI_MLP_FACT_STRING_RELU;
+	}
+	else if(fact == ai_mlpFact_PReLU)
+	{
+		return AI_MLP_FACT_STRING_PRELU;
+	}
+	else if(fact == ai_mlpFact_tanh)
+	{
+		return AI_MLP_FACT_STRING_TANH;
+	}
+	else if(fact == ai_mlpFact_dlinear)
+	{
+		return AI_MLP_FACT_STRING_DLINEAR;
+	}
+	else if(fact == ai_mlpFact_dlogistic)
+	{
+		return AI_MLP_FACT_STRING_DLOGISTIC;
+	}
+	else if(fact == ai_mlpFact_dReLU)
+	{
+		return AI_MLP_FACT_STRING_DRELU;
+	}
+	else if(fact == ai_mlpFact_dPReLU)
+	{
+		return AI_MLP_FACT_STRING_DPRELU;
+	}
+	else if(fact == ai_mlpFact_dtanh)
+	{
+		return AI_MLP_FACT_STRING_DTANH;
+	}
+
+	return AI_MLP_FACT_STRING_CUSTOM;
+}
 
 float ai_mlpFact_linear(float x)
 {

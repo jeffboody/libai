@@ -28,8 +28,15 @@
 
 typedef struct ai_mlpLayer_s ai_mlpLayer_t;
 
+#define AI_MLP_STATE_INIT  0
+#define AI_MLP_STATE_TRAIN 1
+#define AI_MLP_STATE_SOLVE 2
+#define AI_MLP_STATE_COUNT 3
+
 typedef struct
 {
+	int state;
+
 	int m;
 	int p;
 	int q;
@@ -37,6 +44,9 @@ typedef struct
 
 	// learning rate
 	float rate;
+
+	// in layer
+	float* in; // m
 
 	// hidden layer 1 (p > 0)
 	ai_mlpLayer_t* h1;
@@ -58,7 +68,7 @@ void       ai_mlp_delete(ai_mlp_t** _self);
 void       ai_mlp_train(ai_mlp_t* self,
                         float* in, float* out);
 float*     ai_mlp_solve(ai_mlp_t* self, float* in);
-int        ai_mlp_graph(ai_mlp_t* self, float* in,
+int        ai_mlp_graph(ai_mlp_t* self,
                         const char* label,
                         const char* fname);
 

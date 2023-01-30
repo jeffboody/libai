@@ -26,6 +26,8 @@
 
 typedef float (*ai_mlpFact_fn)(float x);
 
+const char* ai_mlpFact_string(ai_mlpFact_fn fact);
+
 // activation functions
 float ai_mlpFact_linear(float x);
 float ai_mlpFact_logistic(float x);

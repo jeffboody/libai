@@ -23,6 +23,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #define LOG_TAG "ai"
@@ -42,6 +43,11 @@ ai_mlp_new(int m, int p, int q, int n, float rate,
            ai_mlpFact_fn facto,
            ai_mlpFact_fn dfacto)
 {
+	ASSERT(facth);
+	ASSERT(dfacth);
+	ASSERT(facto);
+	ASSERT(dfacto);
+
 	ai_mlp_t* self;
 	self = (ai_mlp_t*) CALLOC(1, sizeof(ai_mlp_t));
 	if(self == NULL)
@@ -58,6 +64,12 @@ ai_mlp_new(int m, int p, int q, int n, float rate,
 
 	// initialize seed for rand
 	srand(time(NULL));
+
+	self->in = (float*) CALLOC(m, sizeof(float));
+	if(self->in == NULL)
+	{
+		goto fail_in;
+	}
 
 	if(p && q)
 	{
@@ -111,6 +123,8 @@ ai_mlp_new(int m, int p, int q, int n, float rate,
 	fail_h2:
 		ai_mlpLayer_delete(&self->h1);
 	fail_h1:
+		FREE(self->in);
+	fail_in:
 		FREE(self);
 	return NULL;
 }
@@ -125,6 +139,7 @@ void ai_mlp_delete(ai_mlp_t** _self)
 		ai_mlpLayer_delete(&self->Omega);
 		ai_mlpLayer_delete(&self->h2);
 		ai_mlpLayer_delete(&self->h1);
+		FREE(self->in);
 		FREE(self);
 		*_self = NULL;
 	}
@@ -162,12 +177,16 @@ void ai_mlp_train(ai_mlp_t* self,
 		ai_mlpLayer_updateSLP(self->rate, in,
 		                      self->Omega, out);
 	}
+
+	self->state = AI_MLP_STATE_TRAIN;
 }
 
 float* ai_mlp_solve(ai_mlp_t* self, float* in)
 {
 	ASSERT(self);
 	ASSERT(in);
+
+	memcpy(self->in, in, self->m*sizeof(float));
 
 	float* o1;
 	float* o2;
@@ -188,11 +207,13 @@ float* ai_mlp_solve(ai_mlp_t* self, float* in)
 		oo = ai_mlpLayer_solve(self->Omega, in);
 	}
 
+	self->state = AI_MLP_STATE_SOLVE;
+
 	return oo;
 }
 
-int ai_mlp_graph(ai_mlp_t* self, float* in,
-                 const char* label, const char* fname)
+int ai_mlp_graph(ai_mlp_t* self, const char* label,
+                 const char* fname)
 {
 	ASSERT(self);
 	ASSERT(label);
@@ -219,43 +240,130 @@ int ai_mlp_graph(ai_mlp_t* self, float* in,
 	ai_mlpLayer_t* h2    = self->h2;
 	ai_mlpLayer_t* Omega = self->Omega;
 
-	// in nodes
-	int m;
-	int n;
-	for(m = 0; m < self->m; ++m)
-	{
-		fprintf(f, "\tin%i [label=\"in%i\\n%0.2f\"];\n",
-		        m, m, in[m]);
-	}
-
-	// h1 nodes
+	const char* h1_fact    = NULL;
+	const char* h2_fact    = NULL;
+	const char* Omega_fact = NULL;
 	if(h1)
 	{
-		for(n = 0; n < h1->n; ++n)
-		{
-			fprintf(f, "\th1%i [label=\"h1%i\\nnet=%0.2f\\ndelta=%0.2f\\nb=%0.2f\\no=%0.2f\"];\n",
-			        n, n, h1->net[n], h1->delta[n],
-			        h1->b[n], h1->o[n]);
-		}
+		h1_fact = ai_mlpFact_string(h1->fact);
 	}
-
-	// h2 nodes
 	if(h2)
 	{
-		for(n = 0; n < h2->n; ++n)
+		h2_fact = ai_mlpFact_string(h2->fact);
+	}
+	Omega_fact = ai_mlpFact_string(Omega->fact);
+
+	int m;
+	int n;
+	if(self->state == AI_MLP_STATE_TRAIN)
+	{
+		// in nodes
+		for(m = 0; m < self->m; ++m)
 		{
-			fprintf(f, "\th2%i [label=\"h2%i\\nnet=%0.2f\\ndelta=%0.2f\\nb=%0.2f\\no=%0.2f\"];\n",
-			        n, n, h2->net[n], h2->delta[n],
-			        h2->b[n], h2->o[n]);
+			fprintf(f, "\tin%i [label=\"in%i\\n%0.2f\"];\n",
+			        m, m, self->in[m]);
+		}
+
+		// h1 nodes
+		if(h1)
+		{
+			for(n = 0; n < h1->n; ++n)
+			{
+				fprintf(f, "\th1%i [label=\"h1%i\\nfact=%s\\nb=%0.2f\\nnet=%0.2f\\ndelta=%0.2f\\no=%0.2f\"];\n",
+				        n, n, h1_fact, h1->b[n], h1->net[n],
+				        h1->delta[n], h1->o[n]);
+			}
+		}
+
+		// h2 nodes
+		if(h2)
+		{
+			for(n = 0; n < h2->n; ++n)
+			{
+				fprintf(f, "\th2%i [label=\"h2%i\\nfact=%s\\nb=%0.2f\\nnet=%0.2f\\ndelta=%0.2f\\no=%0.2f\"];\n",
+				        n, n, h2_fact, h2->b[n], h2->net[n],
+				        h2->delta[n], h2->o[n]);
+			}
+		}
+
+		// Omega nodes
+		for(n = 0; n < Omega->n; ++n)
+		{
+			fprintf(f, "\tOmega%i [label=\"Omega%i\\nfact=%s\\nb=%0.2f\\nnet=%0.2f\\ndelta=%0.2f\\no=%0.2f\"];\n",
+			        n, n, Omega_fact, Omega->b[n], Omega->net[n],
+			        Omega->delta[n], Omega->o[n]);
 		}
 	}
-
-	// Omega nodes
-	for(n = 0; n < Omega->n; ++n)
+	else if(self->state == AI_MLP_STATE_SOLVE)
 	{
-		fprintf(f, "\tOmega%i [label=\"Omega%i\\nnet=%0.2f\\ndelta=%0.2f\\nb=%0.2f\\no=%0.2f\"];\n",
-		        n, n, Omega->net[n], Omega->delta[n],
-		        Omega->b[n], Omega->o[n]);
+		// in nodes
+		for(m = 0; m < self->m; ++m)
+		{
+			fprintf(f, "\tin%i [label=\"in%i\\n%0.2f\"];\n",
+			        m, m, self->in[m]);
+		}
+
+		// h1 nodes
+		if(h1)
+		{
+			for(n = 0; n < h1->n; ++n)
+			{
+				fprintf(f, "\th1%i [label=\"h1%i\\nfact=%s\\nb=%0.2f\\nnet=%0.2f\\no=%0.2f\"];\n",
+				        n, n, h1_fact, h1->b[n], h1->net[n], h1->o[n]);
+			}
+		}
+
+		// h2 nodes
+		if(h2)
+		{
+			for(n = 0; n < h2->n; ++n)
+			{
+				fprintf(f, "\th2%i [label=\"h2%i\\nfact=%s\\nb=%0.2f\\nnet=%0.2f\\no=%0.2f\"];\n",
+				        n, n, h2_fact, h2->b[n], h2->net[n], h2->o[n]);
+			}
+		}
+
+		// Omega nodes
+		for(n = 0; n < Omega->n; ++n)
+		{
+			fprintf(f, "\tOmega%i [label=\"Omega%i\\nfact=%s\\nb=%0.2f\\nnet=%0.2f\\no=%0.2f\"];\n",
+			        n, n, Omega_fact, Omega->b[n], Omega->net[n], Omega->o[n]);
+		}
+	}
+	else
+	{
+		// in nodes
+		for(m = 0; m < self->m; ++m)
+		{
+			fprintf(f, "\tin%i [label=\"in%i\"];\n", m, m);
+		}
+
+		// h1 nodes
+		if(h1)
+		{
+			for(n = 0; n < h1->n; ++n)
+			{
+				fprintf(f, "\th1%i [label=\"h1%i\\nfact=%s\\nb=%0.2f\"];\n",
+				        n, n, h1_fact, h1->b[n]);
+			}
+		}
+
+		// h2 nodes
+		if(h2)
+		{
+			for(n = 0; n < h2->n; ++n)
+			{
+				fprintf(f, "\th2%i [label=\"h2%i\\nfact=%s\\nb=%0.2f\"];\n",
+				        n, n, h2_fact, h2->b[n]);
+			}
+		}
+
+		// Omega nodes
+		for(n = 0; n < Omega->n; ++n)
+		{
+			fprintf(f, "\tOmega%i [label=\"Omega%i\\nfact=%s\\nb=%0.2f\"];\n",
+			        n, n, Omega_fact, Omega->b[n]);
+		}
 	}
 
 	// weights
