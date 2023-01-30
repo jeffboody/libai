@@ -26,7 +26,9 @@
 
 typedef float (*ai_mlpFact_fn)(float x);
 
-const char* ai_mlpFact_string(ai_mlpFact_fn fact);
+// string/function conversions
+const char*   ai_mlpFact_string(ai_mlpFact_fn fact);
+ai_mlpFact_fn ai_mlpFact_function(const char* str);
 
 // activation functions
 float ai_mlpFact_linear(float x);

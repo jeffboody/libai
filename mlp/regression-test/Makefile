@@ -7,15 +7,15 @@ OBJECTS  = $(TARGET).o $(CLASSES:%=%.o)
 HFILES   = $(CLASSES:%=%.h)
 OPT      = -O2 -Wall
 CFLAGS   = $(OPT) -I.
-LDFLAGS  = -Llibai -lai -Llibcc -lcc -ldl -lpthread -lm
+LDFLAGS  = -Llibai -lai -Ljsmn/wrapper -l jsmn -Llibcc -lcc -ldl -lpthread -lm
 CCC      = gcc
 
 all: $(TARGET)
 
-$(TARGET): $(OBJECTS) libai libcc
+$(TARGET): $(OBJECTS) libai libcc jsmn
 	$(CCC) $(OPT) $(OBJECTS) -o $@ $(LDFLAGS)
 
-.PHONY: libai libcc
+.PHONY: libai libcc jsmn
 
 libai:
 	$(MAKE) -C libai
@@ -23,10 +23,14 @@ libai:
 libcc:
 	$(MAKE) -C libcc
 
+jsmn:
+	$(MAKE) -C jsmn/wrapper
+
 clean:
 	rm -f $(OBJECTS) *~ \#*\# $(TARGET)
 	$(MAKE) -C libai clean
 	$(MAKE) -C libcc clean
-	rm libai libcc
+	$(MAKE) -C jsmn/wrapper clean
+	rm libai libcc jsmn
 
 $(OBJECTS): $(HFILES)

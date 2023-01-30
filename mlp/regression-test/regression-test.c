@@ -24,12 +24,14 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define LOG_TAG "ai"
 #include "libai/mlp/ai_mlpFact.h"
 #include "libai/mlp/ai_mlpLayer.h"
 #include "libai/mlp/ai_mlp.h"
-
-#define LOG_TAG "ai"
 #include "libcc/cc_log.h"
+#include "libcc/cc_memory.h"
 
 #define REGRESSION_TEST_XSQUARED
 
@@ -76,6 +78,13 @@ int main(int argc, char** argv)
 	if(ferr == NULL)
 	{
 		goto fail_ferr;
+	}
+
+	FILE* fmlp;
+	fmlp = fopen("out/mlp.json", "w");
+	if(fmlp == NULL)
+	{
+		goto fail_fmlp;
 	}
 
 	// training
@@ -134,6 +143,29 @@ int main(int argc, char** argv)
 		     i, in, out, mlp->Omega->o[0], err);
 	}
 
+	// export mlp
+	char* buf = ai_mlp_export(mlp);
+	if(buf)
+	{
+		// minimal validation testing
+		ai_mlp_t* tmp;
+		tmp = ai_mlp_import(buf, NULL, NULL, NULL, NULL);
+		if((tmp       == NULL)   ||
+		   (mlp->m    != tmp->m) ||
+		   (mlp->p    != tmp->p) ||
+		   (mlp->q    != tmp->q) ||
+		   (mlp->n    != tmp->n) ||
+		   (mlp->rate != tmp->rate))
+		{
+			LOGW("import failed");
+		}
+		ai_mlp_delete(&tmp);
+
+		fwrite(buf, strlen(buf), 1, fmlp);
+		FREE(buf);
+	}
+
+	fclose(fmlp);
 	fclose(ferr);
 	fclose(fdat);
 	ai_mlp_delete(&mlp);
@@ -142,6 +174,8 @@ int main(int argc, char** argv)
 	return EXIT_SUCCESS;
 
 	// failure
+	fail_fmlp:
+		fclose(ferr);
 	fail_ferr:
 		fclose(fdat);
 	fail_fdat:

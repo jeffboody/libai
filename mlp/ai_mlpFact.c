@@ -23,6 +23,7 @@
 
 #include <math.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define LOG_TAG "ai"
 #include "../../libcc/cc_log.h"
@@ -90,6 +91,59 @@ const char* ai_mlpFact_string(ai_mlpFact_fn fact)
 	}
 
 	return AI_MLP_FACT_STRING_CUSTOM;
+}
+
+ai_mlpFact_fn ai_mlpFact_function(const char* str)
+{
+	ASSERT(str);
+
+	if(strcmp(str, AI_MLP_FACT_STRING_LINEAR) == 0)
+	{
+		return ai_mlpFact_linear;
+	}
+	else if(strcmp(str, AI_MLP_FACT_STRING_LOGISTIC) == 0)
+	{
+		return ai_mlpFact_logistic;
+	}
+	else if(strcmp(str, AI_MLP_FACT_STRING_RELU) == 0)
+	{
+		return ai_mlpFact_ReLU;
+	}
+	else if(strcmp(str, AI_MLP_FACT_STRING_PRELU) == 0)
+	{
+		return ai_mlpFact_PReLU;
+	}
+	else if(strcmp(str, AI_MLP_FACT_STRING_TANH) == 0)
+	{
+		return ai_mlpFact_tanh;
+	}
+	else if(strcmp(str, AI_MLP_FACT_STRING_DLINEAR) == 0)
+	{
+		return ai_mlpFact_dlinear;
+	}
+	else if(strcmp(str, AI_MLP_FACT_STRING_DLOGISTIC) == 0)
+	{
+		return ai_mlpFact_dlogistic;
+	}
+	else if(strcmp(str, AI_MLP_FACT_STRING_DRELU) == 0)
+	{
+		return ai_mlpFact_dReLU;
+	}
+	else if(strcmp(str, AI_MLP_FACT_STRING_DPRELU) == 0)
+	{
+		return ai_mlpFact_dPReLU;
+	}
+	else if(strcmp(str, AI_MLP_FACT_STRING_DTANH) == 0)
+	{
+		return ai_mlpFact_dtanh;
+	}
+	else if(strcmp(str, AI_MLP_FACT_STRING_CUSTOM) == 0)
+	{
+		return NULL;
+	}
+
+	LOGE("invalid %s", str);
+	return NULL;
 }
 
 float ai_mlpFact_linear(float x)

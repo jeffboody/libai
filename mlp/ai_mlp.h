@@ -65,6 +65,12 @@ ai_mlp_t* ai_mlp_new(int m, int p, int q, int n,
                      ai_mlpFact_fn facto,
                      ai_mlpFact_fn dfacto);
 void       ai_mlp_delete(ai_mlp_t** _self);
+ai_mlp_t*  ai_mlp_import(const char* json,
+                         ai_mlpFact_fn default_facth,
+                         ai_mlpFact_fn default_dfacth,
+                         ai_mlpFact_fn default_facto,
+                         ai_mlpFact_fn default_dfacto);
+char*      ai_mlp_export(ai_mlp_t* self);
 void       ai_mlp_train(ai_mlp_t* self,
                         float* in, float* out);
 float*     ai_mlp_solve(ai_mlp_t* self, float* in);
