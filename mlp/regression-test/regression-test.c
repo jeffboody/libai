@@ -149,7 +149,8 @@ int main(int argc, char** argv)
 	{
 		// minimal validation testing
 		ai_mlp_t* tmp;
-		tmp = ai_mlp_import(buf, NULL, NULL, NULL, NULL);
+		tmp = ai_mlp_import(strlen(buf), buf,
+		                    NULL, NULL, NULL, NULL);
 		if((tmp       == NULL)   ||
 		   (mlp->m    != tmp->m) ||
 		   (mlp->p    != tmp->p) ||

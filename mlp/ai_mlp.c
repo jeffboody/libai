@@ -203,7 +203,7 @@ void ai_mlp_delete(ai_mlp_t** _self)
 	}
 }
 
-ai_mlp_t* ai_mlp_import(const char* json,
+ai_mlp_t* ai_mlp_import(size_t size, const char* json,
                         ai_mlpFact_fn default_facth,
                         ai_mlpFact_fn default_dfacth,
                         ai_mlpFact_fn default_facto,
@@ -217,7 +217,7 @@ ai_mlp_t* ai_mlp_import(const char* json,
 
 	// see ai_mlp_export for file format
 
-	jsmn_val_t* root = jsmn_val_new(json, strlen(json));
+	jsmn_val_t* root = jsmn_val_new(json, size);
 	if(root == NULL)
 	{
 		return NULL;
