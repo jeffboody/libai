@@ -183,6 +183,25 @@ prior to performing a computationally expensive operation.
 The final 1x1 convolution filter can be used to expand the
 output image depth back to WxHxD.
 
+Pooling Layer
+-------------
+
+A pooling layer may be used to reduce dimensionality in the
+W/H dimensions and also introduce a slight amount of local
+translational invariance. Much like convolution, the pooling
+operation slides a window across the input matrix and
+outputs a value for each step. For example, a pooling
+operation consisting of a 2x2 window with a stride of 2
+will reduce the width and height dimensions of the input
+image by half. Typically the max pooling function is used
+which simply outputs the max value of elements within the
+pooling window. This max value has the highest activation to
+the convolution filter which is desirable when trying to
+identify features such as edges. Other pooling functions may
+also include the average, min or other attention based
+functions.
+
+
 References
 ==========
 
@@ -220,6 +239,10 @@ Convolution Padding
 
 * [Networks in Networks and 1x1 Convolutions](https://www.coursera.org/lecture/convolutional-neural-networks/networks-in-networks-and-1x1-convolutions-ZTb8x)
 * [Talented Mr. 1X1: Comprehensive look at 1X1 Convolution in Deep Learning](https://medium.com/analytics-vidhya/talented-mr-1x1-comprehensive-look-at-1x1-convolution-in-deep-learning-f6b355825578)
+
+Pooling Layer
+
+* [What is Pooling in a Convolutional Neural Network (CNN): Pooling Layers Explained](https://programmathically.com/what-is-pooling-in-a-convolutional-neural-network-cnn-pooling-layers-explained/)
 
 Auto Encoders
 
