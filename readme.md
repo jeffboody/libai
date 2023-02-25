@@ -183,6 +183,24 @@ prior to performing a computationally expensive operation.
 The final 1x1 convolution filter can be used to expand the
 output image depth back to WxHxD.
 
+ReLU Activation Function
+------------------------
+
+The ReLU activation function is typically applied on a
+per-element basis following the convolution operation.
+
+According to the AlexNet CNN implementation, the ReLU
+activation function can be used to train deep CNNs much
+faster than saturating activation functions (e.g. tanh or
+sigmoid).
+
+It is also useful to note that many convolution operations
+are designed to have a positive and negative response to
+their input (e.g. Sobel Edge Filter). By discarding the
+negative response with the ReLU activation function we can
+eliminate the redundant "ghost edges" associated with the
+negative response.
+
 Pooling Layer
 -------------
 
@@ -254,6 +272,7 @@ Image Segmentation
 
 Image Classification
 
+* [Concept of AlexNet: Convolutional Neural Network](https://medium.com/analytics-vidhya/concept-of-alexnet-convolutional-neural-network-6e73b4f9ee30)
 * [ImageNet Classification with Deep Convolutional Neural Networks](https://papers.nips.cc/paper/2012/file/c399862d3b9d6b76c8436e924a68c45b-Paper.pdf)
 
 Image Inpainting
