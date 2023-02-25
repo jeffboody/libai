@@ -41,8 +41,8 @@ The following diagram shows the 1-1-0-1 MLP Diagram of y=x*x.
 Convolutional Neural Networks (CNN)
 ===================================
 
-CNN Filters
------------
+Convolution Filters
+-------------------
 
 The following filters can be applied in the convolution layers of a CNN.
 
@@ -137,6 +137,24 @@ dilation stride between filter samples. For example a 3x3
 filter with a dilation stride of 2 will cover the same area
 as a 5x5 filter.
 
+Same vs Valid Padding with Convolution
+--------------------------------------
+
+The convolution operation processes an input image with
+a convolution filter and return an output image. This
+output image will have a reduced size due to padding
+required for the convolution filter. Given an WxH input
+image and an NxM mask the output will be an
+(W - N + 1)x(H - M + 1) image.
+
+Optionally the input image may be padded (e.g. zeros or
+clamp-to-edge) such that the output image size remains the
+same as the input image. The amount of padding required is
+p = ((N - 1)/2, (M -1)/2).
+
+Padded images are said to use "same" padding while unpadded
+images are said to use "valid" or "no" padding.
+
 References
 ==========
 
@@ -165,6 +183,10 @@ CNN Filters
 * [Normal Distribution or Gaussian Distribution](https://en.wikipedia.org/wiki/Normal_distribution)
 * [Separable Filters](https://en.wikipedia.org/wiki/Separable_filter)
 * [Canny Edge Detector](https://en.wikipedia.org/wiki/Canny_edge_detector)
+
+Convolution Padding
+
+* [How Padding helps in CNN](https://www.numpyninja.com/post/how-padding-helps-in-cnn)
 
 Auto Encoders
 
