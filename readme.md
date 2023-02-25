@@ -155,6 +155,34 @@ p = ((N - 1)/2, (M -1)/2).
 Padded images are said to use "same" padding while unpadded
 images are said to use "valid" or "no" padding.
 
+1x1 Convolution (Network-in-Network)
+------------------------------------
+
+The 1x1 convolution operation is simply a convolution
+operation that operates on the depth component of an WxHxD
+matrix. The size of the convolution filter is actually
+1x1xD. The result of an indivitual 1x1 convolution
+operation is a WxHx1 matrix. A collection of C 1x1xD
+filters can be applied to a WxHxD matrix which results in
+a WxHxC matrix.
+
+As a result, the 1x1 convolution can be used for
+dimensionality reduction (e.g. C < D) and for
+dimensionality expansion (e.g. C > D). The dimensionality
+reduction is a useful technique to improve performance of
+subsequent operations and can significantly reduce the
+number of parameters in the model. One trivial example of a
+dimensionality reduction is the conversion of an RGB image
+to a grayscale image where an WxHx3 image is converted to a
+WxHx1 image with a 1x1x3 averaging filter (1/3, 1/3, 1/3).
+
+A "Bottle-Neck layer" is one which includes a sequence of
+1x1, MxN and 1x1 convolution filters. The initial 1x1
+convolution filter reduces the depth of the WxHxD matrix
+prior to performing a computationally expensive operation.
+The final 1x1 convolution filter can be used to expand the
+output image depth back to WxHxD.
+
 References
 ==========
 
@@ -187,6 +215,11 @@ CNN Filters
 Convolution Padding
 
 * [How Padding helps in CNN](https://www.numpyninja.com/post/how-padding-helps-in-cnn)
+
+1x1 Convolution
+
+* [Networks in Networks and 1x1 Convolutions](https://www.coursera.org/lecture/convolutional-neural-networks/networks-in-networks-and-1x1-convolutions-ZTb8x)
+* [Talented Mr. 1X1: Comprehensive look at 1X1 Convolution in Deep Learning](https://medium.com/analytics-vidhya/talented-mr-1x1-comprehensive-look-at-1x1-convolution-in-deep-learning-f6b355825578)
 
 Auto Encoders
 
