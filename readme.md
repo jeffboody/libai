@@ -41,6 +41,60 @@ The following diagram shows the 1-1-0-1 MLP Diagram of y=x*x.
 Convolutional Neural Networks (CNN)
 ===================================
 
+The data within a MLP is represented as a 1D vector. It is
+possible to convert a WxHxD image to a 1D vector by
+concatenating its pixels however this leads to a couple of
+problems. The first problem is that the MLP will have a
+untenable number of parameters due to the fact that it
+uses a fully connected network. The second problem is that
+the spatial relationships between pixels are lost. To
+resolve these problems we will need to consider a different
+data representation and connection scheme as follows.
+
+The data within a CNN can generally be described as an
+N-dimensional tensor (e.g. multi-dimensional arrays). When
+the input consists of an image, the tensor will consist of
+an WxHxD array. At the input layer the W and H values
+correspond to the the image size while the D (depth) value
+corresponds to the number of color channels. A CNN may
+consist of multiple layers where each layer learns how to
+recognize a different feature. Conceptually the early
+layers might learn to identify low level features (e.g.
+edges) while each subsequent layer might learn higher level
+features (e.g. eyes/nose/mouth/face). Each CNN layer is
+typically exposed to a larger receptive field which
+facilitates learning of higher level features. In practice,
+the precise function of each individual CNN layer cannot be
+explained as they may be the product of millions of
+parameters. The internal CNN layers may also have varying
+sizes of tensors depending on the operations applied at
+each layer.
+
+The fully connected network can be replaced by sets of
+small convolution filters whose values correspond to
+trainable weights in the neural network. The convolutional
+filters are windows which slide across the CNN
+multi-dimensional arrays to compute per-pixel features. The
+convolutional filter weights are re-used as the window
+slides across the CNN multi-dimensional arrays. As a result
+the number of trainable weights is reduced enormously. For
+example, a 1000x1000x1 image will have 10^12 ((1000x1000)^2)
+weights in a single layer of a fully connected network.
+While a CNN layer consisting of 100 3x3x1 convolution
+filters will only have 900 (100x3x3) weights. Note that
+these calculations disregard the relatively small number of
+bias weights.
+
+The CNN multi-dimensional arrays and the convolutional
+filters are locally connected which preserves spatial
+relationships between pixels.
+
+The next section will describe the convolution operation in
+detail.
+
+Convolution Operation
+---------------------
+
 Convolution is a well known technique in computer vision
 where carefully designed convolution filters are used to
 extract an intuitive sets of features. See the Appendix for
@@ -254,6 +308,10 @@ Bias Update Function
 
 * [Training Hidden Units: The Generalized Delta Rule](https://web.stanford.edu/group/pdplab/originalpdphandbook/Chapter%205.pdf)
 
+Deep Learning
+
+* [Deep Learning](https://leonardoaraujosantos.gitbook.io/artificial-inteligence/machine_learning/deep_learning)
+
 Activation Functions
 
 * [Activation Functions in Neural Networks](https://towardsdatascience.com/activation-functions-neural-networks-1cbd9f8d91d6)
@@ -263,7 +321,7 @@ Loss Functions
 
 * [Loss Functions and Their Use In Neural Networks](https://towardsdatascience.com/loss-functions-and-their-use-in-neural-networks-a470e703f1e9)
 
-CNN Filters
+Convolution Filters
 
 * [Filters In Convolutional Neural Networks](https://blog.paperspace.com/filters-in-convolutional-neural-networks/)
 * [Convolution Filters / Filters in CNN](https://iq.opengenus.org/convolution-filters/)
