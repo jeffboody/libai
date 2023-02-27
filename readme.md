@@ -108,33 +108,100 @@ the data set. These learned convolution filters may resemble
 traditional filters, but they will more likely consist of
 completly novel convolution filters.
 
-Same vs Valid Padding with Convolution
---------------------------------------
+To explain the convolution operation lets consider the
+following 8x8x1 input array which contains a vertical line
+feature.
 
-The convolution operation processes an input image with
-a convolution filter and return an output image. This
-output image will have a reduced size due to padding
-required for the convolution filter. Given an WxH input
-image and an NxM mask the output will be an
-(W - N + 1)x(H - M + 1) image.
+	0 0 0 0 1 0 0 0
+	0 0 0 0 1 0 0 0
+	0 0 0 0 1 0 0 0
+	0 0 0 0 1 0 0 0
+	0 0 0 0 1 0 0 0
+	0 0 0 0 1 0 0 0
+	0 0 0 0 1 0 0 0
+	0 0 0 0 1 0 0 0
 
-Optionally the input image may be padded (e.g. zeros or
-clamp-to-edge) such that the output image size remains the
-same as the input image. The amount of padding required is
-p = ((N - 1)/2, (M -1)/2).
+Lets also select a traditional 3x3x1 Sobel vertical edge
+filter.
+
+	    -1 0 1
+	1/4 -2 0 2
+	    -1 0 1
+
+The convolution operation involves sliding the filter
+window across the input array and computing the dot product
+between the two at each step. The edges of the input array
+present a problem with this operation since the filter
+window must be centered on the array element to be
+computed. To address this problem, either the input array
+may be padded such that there are no overhanging elements
+from the filter window or the output array may be cropped.
 
 Padded images are said to use "same" padding while unpadded
-images are said to use "valid" or "no" padding.
+images are said to use "valid" or "no" padding. Same
+padding simply means the output array will have the same
+dimensions as the input array. The amount of padding
+required for same padding with an MxM filter is (M - 1)/2.
+Alternatively, a WxH input array would be cropped to have
+a (W - M + 1)x(H - M + 1) output array without padding.
 
-Dilated Convolution
--------------------
+The resulting output matrix with each padding scheme is as
+follows.
+
+	8x8x1 Output Array with Same Padding
+
+	    0 0 0 3 0 -3 0 0
+	    0 0 0 4 0 -4 0 0
+	    0 0 0 4 0 -4 0 0
+	    0 0 0 4 0 -4 0 0
+	1/4 0 0 0 4 0 -4 0 0
+	    0 0 0 4 0 -4 0 0
+	    0 0 0 4 0 -4 0 0
+	    0 0 0 3 0 -3 0 0
+
+	6x6x1 Output Array with No/Valid Padding
+
+	    0 0 4 0 -4 0
+	    0 0 4 0 -4 0
+	    0 0 4 0 -4 0
+	1/4 0 0 4 0 -4 0
+	    0 0 4 0 -4 0
+	    0 0 4 0 -4 0
+
+The filter must have the same depth as the input array in
+order to compute the dot product acrosss channels.
+
+The output array will have one channel per filter.
+
+Receptive Field
+---------------
+
+The receptive field is the region of the sensory area
+which can be affected by a stimuli. For the convolution
+input array the receptive field is a single element however
+the receptive field increases as the result of the
+convolution operation (e.g. to 3x3 elements in the previous
+example). Each subsequent layer of convolutions will also
+increase the receptive field. For example, a sequence of
+3x3-3x3-3x3 convolutions will increase the receptive field
+from 1 to 3-5-7 elements.
+
+It is advantagous to leverage this effect to increase the
+receptive field size by using small convolution filters
+because they are faster to compute and will have fewer
+parameters to train. A WxH array with MxM filter will
+require WxHxMxM operations to compute the dot product. A
+7x7 filter will result in 49 operations per pixel while
+three 3x3 filters will result in 27 operations per pixel.
+This principle is similar to separable filters described in
+the appendix.
 
 The dilation technique can also be applied to filters to
 increase their receptive field and/or increase performance
 of large filters. This is achieved by introducing a
-dilation rate between filter samples. For example a 3x3
-filter with a dilation rate of 2 will cover the same area
-as a 5x5 filter.
+dilation rate (stride) between filter elements. For example
+a 3x3 filter with a dilation rate of 2 will cover the same
+area as a 5x5 filter.
 
 1x1 Convolution (Network-in-Network)
 ------------------------------------
@@ -186,19 +253,19 @@ Pooling Layer
 -------------
 
 A pooling layer may be used to reduce dimensionality in the
-W/H dimensions and also introduce a slight amount of local
-translational invariance. Much like convolution, the pooling
-operation slides a window across the input matrix and
-outputs a value for each step. For example, a pooling
-operation consisting of a 2x2 window with a stride of 2
-will reduce the width and height dimensions of the input
-image by half. Typically the max pooling function is used
-which simply outputs the max value of elements within the
-pooling window. This max value has the highest activation to
-the convolution filter which is desirable when trying to
-identify features such as edges. Other pooling functions may
-also include the average, min or other attention based
-functions.
+W/H dimensions, increase the receptive field size and also
+introduce a slight amount of local translational invariance.
+Much like convolution, the pooling operation slides a
+window across the input matrix and outputs a value for each
+step. For example, a pooling operation consisting of a 2x2
+window with a stride of 2 will reduce the width and height
+dimensions of the input image by half. Typically the max
+pooling function is used which simply outputs the max value
+of elements within the pooling window. This max value has
+the highest activation to the convolution filter which is
+desirable when trying to identify features such as edges.
+Other pooling functions may also include the average, min or
+other attention based functions.
 
 According to the AlexNex CNN implementation, an overlapping
 pooling technique was used to reduce model overfitting by
@@ -229,47 +296,47 @@ Gaussian Blur (coefficients selected from a normal distribution with desired sta
 
 Sobel Edge Filter (horizontal/vertical)
 
-	-1 0 1 |  1  2  1
-	-2 0 2 |  0  0  0
-	-1 0 1 | -1 -2 -1
+	     1  2  1 | -1 0 1
+	1/4  0  0  0 | -2 0 2
+	    -1 -2 -1 | -1 0 1
 
 Prewitt Edge Filter (horizontal/vertical)
 
-	-1 0 1 |  1  1  1
-	-1 0 1 |  0  0  0
-	-1 0 1 | -1 -1 -1
+	     1  1  1 | -1 0 1
+	1/3  0  0  0 | -1 0 1
+	    -1 -1 -1 | -1 0 1
 
 Robinson Compass Masks (NW/N/NE/E, SE/S/SW/W)
 
-	-2 -1  0 | -1 -2 -1 |  0 -1 -2 |  1  0 -1
-	-1  0  1 |  0  0  0 |  1  0 -1 |  2  0 -2
-	 0  1  2 |  1  2  1 |  2  1  0 |  1  0 -1
+	    -2 -1  0 | -1 -2 -1 |  0 -1 -2 |  1  0 -1
+	1/4 -1  0  1 |  0  0  0 |  1  0 -1 |  2  0 -2
+	     0  1  2 |  1  2  1 |  2  1  0 |  1  0 -1
 
-	 2  1  0 |  1  2  1 |  0  1  2 | -1  0  1
-	 1  0 -1 |  0  0  0 | -1  0  1 | -2  0  2
-	 0 -1 -2 | -1 -2 -1 | -2 -1  0 | -1  0  1
+	    2  1  0 |  1  2  1 |  0  1  2 | -1  0  1
+	1/4 1  0 -1 |  0  0  0 | -1  0  1 | -2  0  2
+	    0 -1 -2 | -1 -2 -1 | -2 -1  0 | -1  0  1
 
 Krisch Compass Masks (NW/N/NE/E, SE/S/SW/W)
 
-	-3 -3 -3 | -3 -3 -3 | -3 -3 -3 |  5 -3 -3
-	-3  0  5 | -3  0 -3 |  5  0 -3 |  5  0 -3
-	-3  5  5 |  5  0  5 |  5  5 -3 |  5 -3 -3
+	     -3 -3 -3 | -3 -3 -3 | -3 -3 -3 |  5 -3 -3
+	1/15 -3  0  5 | -3  0 -3 |  5  0 -3 |  5  0 -3
+	     -3  5  5 |  5  0  5 |  5  5 -3 |  5 -3 -3
 
-	 5  5 -3 |  5  5  5 | -3  5  5 | -3 -3  5
-	 5  0 -3 | -3  0 -3 | -3  0  5 | -3  0  5
-	-3 -3 -3 | -3 -3 -3 | -3 -3 -3 | -3 -3  5
+	      5  5 -3 |  5  5  5 | -3  5  5 | -3 -3  5
+	1/15  5  0 -3 | -3  0 -3 | -3  0  5 | -3  0  5
+	     -3 -3 -3 | -3 -3 -3 | -3 -3 -3 | -3 -3  5
 
 Canny Edge Detector (edge filter with noise removal)
 
 Laplacian Filter (second order derivative edge filter that highlights regions of rapid change)
 
-	 0 -1  0
-	-1  4 -1
-	 0 -1  0
+	     0 -1  0
+	1/4 -1  4 -1
+	     0 -1  0
 
-	-1 -1 -1
-	-1  8 -1
-	-1 -1 -1
+	    -1 -1 -1
+	1/8 -1  8 -1
+	    -1 -1 -1
 
 Gabor Filters (frequency detection filters often used for texture analysis)
 
@@ -282,20 +349,20 @@ filters. Below are some examples.
 	Separable Average Filter
 
 	    1                    1  1  1
-    1/3 1 * 1/3 1 1 1 = 1/9  1  1  1
-        1                    1  1  1
+	1/3 1 * 1/3 1 1 1 = 1/9  1  1  1
+	    1                    1  1  1
 
 	Separable Smoothing Filter
 
 	    1                     1  2  1
-    1/4 2 * 1/4 1 2 1 = 1/16  2  4  2
-        1                     1  2  1
+	1/4 2 * 1/4 1 2 1 = 1/16  2  4  2
+	    1                     1  2  1
 
 	Separable Sobel Edge Filter
 
-	    1             1  0 -1
-        2 * 1 0 -1 =  2  0 -2
-        1             1  0 -1
+	    1                 1  0 -1
+	1/4 2 * 1 0 -1 =  1/4 2  0 -2
+	    1                 1  0 -1
 
 References
 ==========
