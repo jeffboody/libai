@@ -271,6 +271,23 @@ According to the AlexNex CNN implementation, an overlapping
 pooling technique was used to reduce model overfitting by
 selecting a larger sliding window size than the stride size.
 
+Dropout
+-------
+
+Dropout is a regularization procedure that prevents deep
+neural networks from overfitting. Overfitting occurs when
+a neural network memorizes the training data and fails to
+produce generalized solutions for new data. The fact that
+deep neural networks have a very large number of parameters
+can make them more susceptible to to the overfitting
+problem. The dropout procedure consists of probabilistically
+disabling hidden neurons such that they do not contribute to
+the forward pass or participate in backpropagation. As a
+result, the neural network activates a different subset of
+neurons to learn each input which results in more
+generalized solutions. The AlexNet CNN implementation uses
+a probability of 0.5 for dropout neurons.
+
 Appendix
 ========
 
