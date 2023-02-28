@@ -6,37 +6,46 @@ This library includes support for various AI algorithms.
 Multilayer Perceptron (MLP)
 ===========================
 
-The MLP implementation is based primarily on the e-book
-"A Brief Introduction to Neural Networks" and includes
-support for M-P-Q-N MLPs. There are M inputs, N outputs
-and P/Q optional hidden layers. When P/Q are zero then the
-neural network is simply a single layer perceptron (SLP).
+The following e-book provides an excellent introduction to
+neural networks including their relation to biological
+neural networks, the components of artificial neural
+networks, fundamentals on training neural networks and the
+perceptron. Perceptrons are the fundamental building block
+that make up neural networks.
+
+[A Brief Introduction to Neural Networks](https://www.dkriesel.com/en/science/neural_networks)
+
+The following sections will expand upon the ideas presented
+in the e-book where additional discussion is useful.
+
+Implementation
+--------------
+
+This experimental MLP implementation supports M inputs, N
+outputs and P/Q optional hidden layers. When P and Q are
+zero then the neural network is simply a single layer
+perceptron (SLP). The implementation and design are
+expected to change significantly as I incorporate support
+for more advanced neural network variations.
 
 ![MLP](docs/mlp.jpg?raw=true "MLP")
 
-The following diagram shows the MLP backpropagation update
-step.
+Backpropagation Update
+----------------------
+
+The MLP backpropagation update step is fundamental to
+training the MLP however I found that the discussion in
+section 5.4 of the e-book somewhat confusing with regards to
+updating the bias term. This diagram helps to augment that
+section by showing the complete set of updates required for
+the hidden nodes as well as the output nodes.
 
 ![MLP Update](docs/mlp_update.jpg?raw=true "MLP Update")
 
-Regression Test
----------------
+Examples
+--------
 
-A sample regression test is included which demonstrates how
-to use MLPs to approximate a simple nonlinear function
-(e.g. y=x*x).
-
-The following diagram shows the output of y=x*x.
-
-![Output of y=x*x](docs/mlp_xx_output.jpg?raw=true "Output of y=x*x")
-
-The following diagram shows the error of y=x*x.
-
-![Error of y=x*x](docs/mlp_xx_error.jpg?raw=true "Error of y=x*x")
-
-The following diagram shows the 1-1-0-1 MLP Diagram of y=x*x.
-
-![1-1-0-1 MLP Diagram of y=x*x](docs/mlp_xx_diagram.jpg?raw=true "1-1-0-1 MLP Diagram of y=x*x")
+* [Regression Test](mlp/regression-test/readme.md)
 
 Convolutional Neural Networks (CNN)
 ===================================
