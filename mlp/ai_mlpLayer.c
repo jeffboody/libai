@@ -25,6 +25,8 @@
 #include <stdlib.h>
 
 #define LOG_TAG "ai"
+#include "../../libcc/rng/cc_rngNormal.h"
+#include "../../libcc/rng/cc_rngUniform.h"
 #include "../../libcc/cc_log.h"
 #include "../../libcc/cc_memory.h"
 #include "ai_mlpLayer.h"
@@ -33,36 +35,54 @@
 * private                                                  *
 ***********************************************************/
 
-static float
-ai_mlpLayer_randWeight(void)
-{
-	// x is -0.5 to 0.5
-	// excluding -0.1 to 0.1
-	float x;
-	do
-	{
-		x = ((float) (rand()%101))/100.0f - 0.5f;
-	} while(fabs(x) < 0.1f);
-
-	return x;
-}
-
 static void
-ai_mlpLayer_initWeights(ai_mlpLayer_t* self)
+ai_mlpLayer_initXavierWeights(ai_mlpLayer_t* self)
 {
 	ASSERT(self);
+
+	float min = -1.0/sqrt((double) self->m);
+	float max = 1.0/sqrt((double) self->m);
+
+	cc_rngUniform_t rng;
+	cc_rngUniform_init(&rng);
 
 	int    m;
 	int    n;
 	float* w;
 	for(n = 0; n < self->n; ++n)
 	{
-		self->b[n] = ai_mlpLayer_randWeight();
+		self->b[n] = cc_rngUniform_rand2F(&rng, min, max);
 
 		w = ai_mlpLayer_weight(self, n);
 		for(m = 0; m < self->m; ++m)
 		{
-			w[m] = ai_mlpLayer_randWeight();
+			w[m] = cc_rngUniform_rand2F(&rng, min, max);
+		}
+	}
+}
+
+static void
+ai_mlpLayer_initHeWeights(ai_mlpLayer_t* self)
+{
+	ASSERT(self);
+
+	double mu    = 0.0;
+	double sigma = sqrt(2.0/((double) self->m));
+
+	cc_rngNormal_t rng;
+	cc_rngNormal_init(&rng, mu, sigma);
+
+	int    m;
+	int    n;
+	float* w;
+	for(n = 0; n < self->n; ++n)
+	{
+		self->b[n] = cc_rngNormal_rand1F(&rng);
+
+		w = ai_mlpLayer_weight(self, n);
+		for(m = 0; m < self->m; ++m)
+		{
+			w[m] = cc_rngNormal_rand1F(&rng);
 		}
 	}
 }
@@ -119,7 +139,15 @@ ai_mlpLayer_t* ai_mlpLayer_new(int m, int n,
 		goto fail_o;
 	}
 
-	ai_mlpLayer_initWeights(self);
+	if((self->fact == ai_mlpFact_ReLU) ||
+	   (self->fact == ai_mlpFact_PReLU))
+	{
+		ai_mlpLayer_initHeWeights(self);
+	}
+	else
+	{
+		ai_mlpLayer_initXavierWeights(self);
+	}
 
 	// success
 	return self;

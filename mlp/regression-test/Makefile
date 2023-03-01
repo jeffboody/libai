@@ -1,4 +1,5 @@
 export CC_USE_MATH = 1
+export CC_USE_RNG  = 1
 
 TARGET   = regression-test
 CLASSES  =
@@ -31,6 +32,6 @@ clean:
 	$(MAKE) -C libai clean
 	$(MAKE) -C libcc clean
 	$(MAKE) -C jsmn/wrapper clean
-	rm libai libcc jsmn
+	rm libai libcc jsmn pcg-c-basic
 
 $(OBJECTS): $(HFILES)
