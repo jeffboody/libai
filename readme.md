@@ -42,6 +42,48 @@ the hidden nodes as well as the output nodes.
 
 ![MLP Update](docs/mlp_update.jpg?raw=true "MLP Update")
 
+Weight Initialization
+---------------------
+
+Weight initialization is a crucial step to perform
+correctly in order to ensure that the MLP training
+algorithm works properly. In section 5.7.4, the e-book
+simply states that the weights should be initialized with
+small randomly choosen values. This simplistic approach
+addresses the symmetry problem however it can still lead to
+slow learning or divergence (e.g. the output grows to
+infinity) problems. The following weight initialization
+methods also depend on the activation function used.
+
+Xavier Method
+
+	fact   = tanh or logistic
+	m      = number of inputs
+	min    = -1/sqrt(m)
+	max    = 1/sqrt(m)
+	weight = randUniformDistribution(min, max)
+
+Normalized Xavier Method
+
+	fact   = tanh or logistic
+	m      = number of inputs
+	n      = number of outputs
+	min    = -sqrt(6)/sqrt(m + n)
+	max    = sqrt(6)/sqrt(m + n)
+	weight = randUniformDistribution(min, max)
+
+He Method
+
+	fact   = ReLU or PReLU
+	m      = number of inputs
+	mu     = 0.0
+	sigma  = sqrt(2/m)
+	weight = randNormalDistribution(mu, sigma)
+
+Note that the above equations have been altered such that
+the number of inputs is m and the number of outputs is n to
+match the conventions used elsewhere in this library.
+
 Examples
 --------
 
@@ -400,6 +442,11 @@ ANN Introduction
 Bias Update Function
 
 * [Training Hidden Units: The Generalized Delta Rule](https://web.stanford.edu/group/pdplab/originalpdphandbook/Chapter%205.pdf)
+
+Initializing Weights
+
+* [Weight Initialization for Deep Learning Neural Networks](https://machinelearningmastery.com/weight-initialization-for-deep-learning-neural-networks/)
+* [Initializing neural networks](https://www.deeplearning.ai/ai-notes/initialization/index.html)
 
 Deep Learning
 
