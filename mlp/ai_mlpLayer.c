@@ -25,8 +25,6 @@
 #include <stdlib.h>
 
 #define LOG_TAG "ai"
-#include "../../libcc/rng/cc_rngNormal.h"
-#include "../../libcc/rng/cc_rngUniform.h"
 #include "../../libcc/cc_log.h"
 #include "../../libcc/cc_memory.h"
 #include "ai_mlpLayer.h"
@@ -36,53 +34,49 @@
 ***********************************************************/
 
 static void
-ai_mlpLayer_initXavierWeights(ai_mlpLayer_t* self)
+ai_mlpLayer_initXavierWeights(ai_mlpLayer_t* self,
+                              cc_rngUniform_t* rng_uniform)
 {
 	ASSERT(self);
+	ASSERT(rng_uniform);
 
 	float min = -1.0/sqrt((double) self->m);
 	float max = 1.0/sqrt((double) self->m);
-
-	cc_rngUniform_t rng;
-	cc_rngUniform_init(&rng);
 
 	int    m;
 	int    n;
 	float* w;
 	for(n = 0; n < self->n; ++n)
 	{
-		self->b[n] = cc_rngUniform_rand2F(&rng, min, max);
-
 		w = ai_mlpLayer_weight(self, n);
 		for(m = 0; m < self->m; ++m)
 		{
-			w[m] = cc_rngUniform_rand2F(&rng, min, max);
+			w[m] = cc_rngUniform_rand2F(rng_uniform,
+			                            min, max);
 		}
 	}
 }
 
 static void
-ai_mlpLayer_initHeWeights(ai_mlpLayer_t* self)
+ai_mlpLayer_initHeWeights(ai_mlpLayer_t* self,
+                          cc_rngNormal_t* rng_normal)
 {
 	ASSERT(self);
+	ASSERT(rng_normal);
 
 	double mu    = 0.0;
 	double sigma = sqrt(2.0/((double) self->m));
-
-	cc_rngNormal_t rng;
-	cc_rngNormal_init(&rng, mu, sigma);
+	cc_rngNormal_reset(rng_normal, mu, sigma);
 
 	int    m;
 	int    n;
 	float* w;
 	for(n = 0; n < self->n; ++n)
 	{
-		self->b[n] = cc_rngNormal_rand1F(&rng);
-
 		w = ai_mlpLayer_weight(self, n);
 		for(m = 0; m < self->m; ++m)
 		{
-			w[m] = cc_rngNormal_rand1F(&rng);
+			w[m] = cc_rngNormal_rand1F(rng_normal);
 		}
 	}
 }
@@ -92,9 +86,14 @@ ai_mlpLayer_initHeWeights(ai_mlpLayer_t* self)
 ***********************************************************/
 
 ai_mlpLayer_t* ai_mlpLayer_new(int m, int n,
+                               cc_rngUniform_t* rng_uniform,
+                               cc_rngNormal_t* rng_normal,
                                ai_mlpFact_fn fact,
                                ai_mlpFact_fn dfact)
 {
+	ASSERT(rng_uniform);
+	ASSERT(rng_normal);
+
 	ai_mlpLayer_t* self;
 	self = (ai_mlpLayer_t*)
 	       CALLOC(1, sizeof(ai_mlpLayer_t));
@@ -142,11 +141,11 @@ ai_mlpLayer_t* ai_mlpLayer_new(int m, int n,
 	if((self->fact == ai_mlpFact_ReLU) ||
 	   (self->fact == ai_mlpFact_PReLU))
 	{
-		ai_mlpLayer_initHeWeights(self);
+		ai_mlpLayer_initHeWeights(self, rng_normal);
 	}
 	else
 	{
-		ai_mlpLayer_initXavierWeights(self);
+		ai_mlpLayer_initXavierWeights(self, rng_uniform);
 	}
 
 	// success

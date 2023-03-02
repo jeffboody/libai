@@ -50,10 +50,17 @@ correctly in order to ensure that the MLP training
 algorithm works properly. In section 5.7.4, the e-book
 simply states that the weights should be initialized with
 small randomly choosen values. This simplistic approach
-addresses the symmetry problem however it can still lead to
-slow learning or divergence (e.g. the output grows to
-infinity) problems. The following weight initialization
-methods also depend on the activation function used.
+avoids the symmetry problem which occurs when all weights
+are initialized to zero and the resulting partial
+deriviatives will be the same for every neuron during
+backpropagation. The bias weights on the other hand are
+typically initialized to zero as they are not impacted by
+the symmetry problem. Additional problems which can occur
+as the result of incorrect initialization including slow
+learning and divergence (e.g. the output grows to infinity).
+
+The following weight initialization methods are recommended
+depending on the desired activation function.
 
 Xavier Method
 
@@ -451,6 +458,8 @@ Initializing Weights
 
 * [Weight Initialization for Deep Learning Neural Networks](https://machinelearningmastery.com/weight-initialization-for-deep-learning-neural-networks/)
 * [Initializing neural networks](https://www.deeplearning.ai/ai-notes/initialization/index.html)
+* [Bias Initialization in a Neural Network](https://medium.com/@glenmeyerowitz/bias-initialization-in-a-neural-network-2e5d26fed0f0)
+* [3 Common Problems with Neural Network Initialization](https://towardsdatascience.com/3-common-problems-with-neural-network-initialisation-5e6cacfcd8e6)
 
 Deep Learning
 

@@ -120,8 +120,11 @@ ai_mlp_new(int m, int p, int q, int n, float rate,
 	self->n    = n;
 	self->rate = rate;
 
-	// initialize seed for rand
-	srand(time(NULL));
+	cc_rngUniform_t rng_uniform;
+	cc_rngUniform_init(&rng_uniform);
+
+	cc_rngNormal_t rng_normal;
+	cc_rngNormal_init(&rng_normal, 0.0, 1.0);
 
 	self->in = (float*) CALLOC(m, sizeof(float));
 	if(self->in == NULL)
@@ -131,19 +134,25 @@ ai_mlp_new(int m, int p, int q, int n, float rate,
 
 	if(p && q)
 	{
-		self->h1 = ai_mlpLayer_new(m, p, facth, dfacth);
+		self->h1 = ai_mlpLayer_new(m, p,
+		                           &rng_uniform, &rng_normal,
+		                           facth, dfacth);
 		if(self->h1 == NULL)
 		{
 			goto fail_h1;
 		}
 
-		self->h2 = ai_mlpLayer_new(p, q, facth, dfacth);
+		self->h2 = ai_mlpLayer_new(p, q,
+		                           &rng_uniform, &rng_normal,
+		                           facth, dfacth);
 		if(self->h2 == NULL)
 		{
 			goto fail_h2;
 		}
 
-		self->Omega = ai_mlpLayer_new(q, n, facto, dfacto);
+		self->Omega = ai_mlpLayer_new(q, n,
+		                              &rng_uniform, &rng_normal,
+		                              facto, dfacto);
 		if(self->Omega == NULL)
 		{
 			goto fail_Omega;
@@ -151,13 +160,17 @@ ai_mlp_new(int m, int p, int q, int n, float rate,
 	}
 	else if(p)
 	{
-		self->h1 = ai_mlpLayer_new(m, p, facth, dfacth);
+		self->h1 = ai_mlpLayer_new(m, p,
+		                           &rng_uniform, &rng_normal,
+		                           facth, dfacth);
 		if(self->h1 == NULL)
 		{
 			goto fail_h1;
 		}
 
-		self->Omega = ai_mlpLayer_new(p, n, facto, dfacto);
+		self->Omega = ai_mlpLayer_new(p, n,
+		                              &rng_uniform, &rng_normal,
+		                              facto, dfacto);
 		if(self->Omega == NULL)
 		{
 			goto fail_Omega;
@@ -165,7 +178,9 @@ ai_mlp_new(int m, int p, int q, int n, float rate,
 	}
 	else
 	{
-		self->Omega = ai_mlpLayer_new(m, n, facto, dfacto);
+		self->Omega = ai_mlpLayer_new(m, n,
+		                              &rng_uniform, &rng_normal,
+		                              facto, dfacto);
 		if(self->Omega == NULL)
 		{
 			goto fail_Omega;

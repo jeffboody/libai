@@ -24,6 +24,8 @@
 #ifndef ai_mlpLayer_H
 #define ai_mlpLayer_H
 
+#include "../../libcc/rng/cc_rngNormal.h"
+#include "../../libcc/rng/cc_rngUniform.h"
 #include "ai_mlpFact.h"
 
 typedef struct ai_mlpLayer_s
@@ -42,6 +44,8 @@ typedef struct ai_mlpLayer_s
 } ai_mlpLayer_t;
 
 ai_mlpLayer_t* ai_mlpLayer_new(int m, int n,
+                               cc_rngUniform_t* rng_uniform,
+                               cc_rngNormal_t* rng_normal,
                                ai_mlpFact_fn fact,
                                ai_mlpFact_fn dfact);
 void           ai_mlpLayer_delete(ai_mlpLayer_t** _self);
