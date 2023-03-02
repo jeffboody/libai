@@ -412,7 +412,11 @@ Separable filters are used to describe 2D filters as the
 product of two 1D filters. The advantage of 1D filters over
 their equivalent 2D filters is computation performance.
 Some 2D filters may not be described by a product of 1D
-filters. Below are some examples.
+filters. Separable filters are rank-1 matrices. The
+rank and 1D filters can be determined from a matrix by
+performing singular value decomposition (SVD).
+
+Below are some examples.
 
 	Separable Average Filter
 
@@ -469,6 +473,8 @@ Convolution Filters
 * [Normal Distribution or Gaussian Distribution](https://en.wikipedia.org/wiki/Normal_distribution)
 * [Separable Filters](https://en.wikipedia.org/wiki/Separable_filter)
 * [Canny Edge Detector](https://en.wikipedia.org/wiki/Canny_edge_detector)
+* [Separable convolution: Part 2](https://blogs.mathworks.com/steve/2006/11/28/separable-convolution-part-2/)
+* [How can I determine if my convolution is separable](https://stackoverflow.com/questions/5886529/how-can-i-determine-if-my-convolution-is-separable)
 
 Convolution Padding
 
