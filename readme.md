@@ -461,6 +461,11 @@ Initializing Weights
 * [Bias Initialization in a Neural Network](https://medium.com/@glenmeyerowitz/bias-initialization-in-a-neural-network-2e5d26fed0f0)
 * [3 Common Problems with Neural Network Initialization](https://towardsdatascience.com/3-common-problems-with-neural-network-initialisation-5e6cacfcd8e6)
 
+Backpropagation
+
+* [Backpropagation, Neural Networks 1](https://www.youtube.com/watch?v=i94OvYb6noo)
+* [Backpropagation in a Convolutional Layer](https://towardsdatascience.com/backpropagation-in-a-convolutional-layer-24c8d64d8509)
+
 Deep Learning
 
 * [Deep Learning](https://leonardoaraujosantos.gitbook.io/artificial-inteligence/machine_learning/deep_learning)

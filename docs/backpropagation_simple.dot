@@ -1,0 +1,42 @@
+// sudo apt-get install graphviz
+// dot -Tpng backpropagation_simple.dot -o backpropagation_simple.png
+// xdot backpropagation_simple.dot
+digraph BP
+{
+	label="Simple Backpropagation Examples";
+	fontsize=20;
+	size="2,1";
+	ratio=fill;
+
+	legend [shape=box, label="LEGEND\n----------------------------------------\n > Forward Pass\n\n< Backpropagation"];
+
+	relu   [label="ReLU\ny = min(0,x)\n> dy/dx = 0 for x < 0\n> dy/dx = 1 for x >= 0"];
+	relu_x [shape=box, label="x"];
+	relu_y [shape=box, label="y"];
+	relu_x -> relu   [label="< dy/dx = 0 for x < 0\n< dy/dx = 1 for x >= 0"];
+	relu   -> relu_y [label="< dy/dy = 1"];
+
+	add    [label="ADD\ny = x1 + x2\n> dy/dx1 = 1, dy/dx2 = 1"];
+	add_x1 [shape=box, label="x1"];
+	add_x2 [shape=box, label="x2"];
+	add_y  [shape=box, label="y"];
+	add_x1 -> add [label="< dy/dx1 = 1"];
+	add_x2 -> add [label="< dy/dx2 = 1"];
+	add    -> add_y [label="< dy/dy = 1"];
+
+	mul    [label="MUL\ny = x1*x2\n> dy/dx1 = x2, dy/dx2 = x1"];
+	mul_x1 [shape=box, label="x1"];
+	mul_x2 [shape=box, label="x2"];
+	mul_y  [shape=box, label="y"];
+	mul_x1 -> mul [label="< dy/dx1 = x2"];
+	mul_x2 -> mul [label="< dy/dx2 = x1"];
+	mul    -> mul_y [label="< dy/dy = 1"];
+
+	max    [label="MAX\ny = max(x1,x2)\n> dy/dx1 = 0, dy/dx2 = 1 for x1 < x2\n> dy/dx1 = 1, dy/dx2 = 0 for x1 >= x2"];
+	max_x1 [shape=box, label="x1"];
+	max_x2 [shape=box, label="x2"];
+	max_y  [shape=box, label="y"];
+	max_x1 -> max   [label="< dy/dx1 = 0 for x1 < x2\n< dy/dx1 = 1 for x1 >= x2"];
+	max_x2 -> max   [label="< dy/dx2 = 1 for x1 < x2\n< dy/dx2 = 0 for x1 >= x2"];
+	max    -> max_y [label="< dy/dy = 1"];
+}

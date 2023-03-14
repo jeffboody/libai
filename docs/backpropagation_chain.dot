@@ -1,0 +1,25 @@
+// sudo apt-get install graphviz
+// dot -Tpng backpropagation_chain.dot -o backpropagation_chain.png
+// xdot backpropagation_chain.dot
+digraph BP
+{
+	label="Chain Rule Backpropagation Example\nf(x1,x2,x3) = (2*x1 + x2)*x3";
+	fontsize=20;
+	size="2,1";
+	ratio=fill;
+
+	legend [shape=box, label="LEGEND\n----------------------------------------\n > Forward Pass\n\n< Backpropagation\n\nChain Rule\ndz/dx = (dz/dy)*(dy/dx)"];
+
+	x1  [shape=box, label="x1"];
+	x2  [shape=box, label="x2"];
+	x3  [shape=box, label="x3"];
+	z   [shape=box, label="z"];
+	add [label="ADD\ny = 2*x1 + x2\n> dy/dx1 = 2, dy/dx2 = 1"];
+	x1  -> add [label="< dz/dx1 = 2*x3"];
+	x2  -> add [label="< dz/dx2 = x3"];
+
+	mul [label="MUL\nz = y*x3\n> dz/y = x3, dz/dx3 = y = 2*x1 + x2"];
+	add -> mul [label="< dz/dy = x3"];
+	x3  -> mul [label="< dz/dx3 = 2*x1 + x2"];
+	mul -> z [label="< dz/dz = 1"];
+}
