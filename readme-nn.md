@@ -5,40 +5,42 @@ Introduction
 ------------
 
 An artificial neural network is an algorithm that learns to
-solve complex problems by performing a backpropagation
-procedure over a directed acyclic graph (DAG) data
-structure. Neural networks may be applied to solve a wide
-range of problems including linear regression, non-linear
-prediction, classification, segmentation, noise removal,
-natural language translation, interactive conversation and
-text-to-image synthesis. There exists many different types
-of neural networks which have been specifically designed to
-handle this wide range problems. Some notable examples
-include fully connected networks (FCN), convolutional neural
-networks (CNN), recurrent neural networks (RNN), long short
-term memory (LSTM), auto encoders and generative adversarial
-networks (GAN).
+solve complex problems by performing a gradient descent
+optimization across a function graph. Neural networks may be
+applied to solve a wide range of problems such as linear
+regression, non-linear prediction, classification,
+segmentation, noise removal, natural language translation,
+interactive conversation and text-to-image synthesis. There
+exists many different types of neural networks which have
+been specifically designed to handle this wide range
+problems. Some notable examples include fully connected
+networks (FCN), convolutional neural networks (CNN),
+recurrent neural networks (RNN), long short term memory
+(LSTM), auto encoders and generative adversarial networks
+(GAN).
 
 [TODO - SUMMARY]
 
 References
 
-* (CS231n Winter 2016)[https://www.youtube.com/playlist?list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC]
+* [CS231n Winter 2016](https://www.youtube.com/playlist?list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC)
 
-DAG Data Structure
-------------------
+Function Graph
+--------------
 
-The DAG consists of many nodes, each of which implements a
-function in the form of Y = f(X,W) that can solve a
-fragment of the larger problem. These functions include a
-set of parameters W that may be trained or learned using a
-backpropagation procedure which will be described in detail
-in later sections. The functions implemented by each node
-may be specialized for solving particular tasks. Some
-example function types include the perceptron, non-linear
-activation functions, convolution and pooling.
+The function graph is an directed acyclic graph (DAG) that
+consists of many nodes, each of which implements a function
+in the form of Y = f(X,W) that can solve a fragment of the
+larger problem. The inputs and outputs to the functions may
+be multi-dimensional arrays known as tensors. A set of
+parameters (W) are trained or learned during the gradient
+descent optimization procedure known as backpropagation. The
+functions implemented by each node may be specialized for
+solving particular tasks. Some example function types
+include the perceptron, non-linear activation functions,
+convolution and pooling.
 
-Nodes are typically organized into layers of homogenious
+Nodes are typically organized into layers of similar
 functions where the output of one layer is fed into the
 input of the next layer. Early neural network architectures
 were fully connected such that every output of one layer
@@ -51,68 +53,85 @@ depth) and nodes increases, so does the capacity of a neural
 network to solve more complicated problems.
 
 The following diagram shows a simple neural network with two
-inputs X = [x1,x2], two nodes in the first layer [fa,fb],
-two nodes in the second layer [fc,fd] and two outputs
-Y = [y1,y2]. The neural network implements Y = f(X,W) in
-terms of the node functions f = [fa,fb,fc,fd] and the
-parameters W = [Wa,Wb,Wc,Wd]. Each parameter variable may
-represent an array with zero or more elements.
+inputs X = [x1,x2], two nodes in the first layer
+[Node11,Node12], two nodes in the second layer
+[Node21,Node22] and two outputs Y = [y1,y2]. The neural
+network implements Y = f(X,W) in terms of the node functions
+f = [f11,f12,f21,f22] and the parameters
+W = [W11,W12,W21,W22]. Each parameter variable may represent
+an array with zero or more elements.
 
 ![Neural Network Example](docs/nn.jpg?raw=true "Neural Network Example")
-
-Gradient Descent
-----------------
-
-	- TODO - Gradient Descent
-	- local minima
-	- vanishing gradient
-	- exploding gradient
-	- nodes are differentiable
 
 Forward Pass
 ------------
 
-The forward pass is performed during testing to make a
-prediction given some input. A forward pass is also
-performed during training in order to compute the loss
-(e.g. error) between the predicted output and a desired
-training output. A forward pass simply involves evaluating
-node functions in the neural network from the input to the
+A forward pass is performed on the neural network to make a
+prediction given some input and simply involves evaluating
+functions in the function graph from the input to the
 output.
 
 Backpropagation
 ---------------
 
-[TODO - TRAINING]
+The backpropagation procedure is performed on the neural
+network to train or learn the function parameters and
+consists of repeatedly iterating the following steps for
+each training pattern.
 
-The backpropagation procedure performs a gradient descent
-optimization to minimize the loss with respect to each
-function parameter. Given a loss function that is defined
-in terms of the predicted output and desired training
-output.
+1. Make a prediction using a forward pass
+2. Evaluate the loss function (e.g. error)
+3. Backpropagate the loss gradient
+4. Update parameters using gradient descent
+
+A loss function is defined in terms of the predicted
+output and the desired training output. The choice of loss
+function is a hyperparameter that is selected when designing
+the neural network.
 
 	L(Ypredicted, Ytrain)
 
-We wish to update each function parameter such that.
+The goal of the backpropagation procedure is to minimize the
+loss with respect to the function parameters. This goal is
+achieved by applying a gradient descent optimization such
+that the function parameters are updated to reduce the loss.
 
-	w -= gamma*dL/dw
+	wi -= gamma*dL/dwi
 
-Where gamma is the learning rate.
+The learning rate (gamma) is a hyperparameter that is
+selected when designing the neural network.
 
-Since the loss function is defined in terms of the predicted
-output and desired training output we must apply the chain
-rule to backpropagate the loss from the output to each
-function parameter.
+The loss function is defined in terms of the predicted
+output and desired training output rather than the function
+parameters. In order to compute the partial derivative of
+the loss with respect to the funciton parameters we must
+apply the chain rule to backpropagate the loss from the
+output to each function parameter. The chain rule allows for
+partial derivatives to be computed by chaining the partial
+derivatives of dependent variables. For example, using the
+dependent variables x, y and z.
 
-[TODO - CHAIN RULE]
+	dz/dx = (dz/dy)*(dy/dx)
+
+The following diagram shows how to apply the backpropagation
+procedure to the the earlier example.
 
 ![Neural Network Backpropagation Example](docs/nn-backprop.jpg?raw=true "Neural Network Backpropagation Example")
-
-[TODO - DELTA = DY/DX]
 
 References
 
 * [CS231n Winter 2016: Lecture 4: Backpropagation, Neural Networks 1](https://www.youtube.com/watch?v=i94OvYb6noo)
+
+Gradient Descent
+----------------
+
+[TODO - Gradient Descent]
+	- local minima
+	- vanishing gradient
+	- exploding gradient
+	- nodes are differentiable
+	- learning rate (variable)
+	- overtraining/undertraining
 
 Loss Function
 -------------
@@ -124,10 +143,12 @@ Perceptron
 
 Perceptron nodes roughly mimic the functional capabilities
 of biological neurons, however, for our purposes it is
-sufficient to describe the perceptron in terms of the DAG
-node function. As such, the perceptron function performs a
+sufficient to describe the perceptron in terms of the node
+function. As such, the perceptron function performs a
 weighted sum of the inputs, plus an additional bias and is
 followed by a non-linear activation function.
+
+[TODO - forward pass]
 
 The pseudo-code for the perceptron function is as follows.
 
@@ -137,6 +158,9 @@ The pseudo-code for the perceptron function is as follows.
 		y += w[i]*x[i];
 	}
 	y = fact(y);
+
+[TODO - backpropagation]
+[TODO - composite node]
 
 The weights (w) and the bias (b) are parameters that are
 learned by the neural network. The activation function on

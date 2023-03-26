@@ -9,11 +9,11 @@ digraph NN
 	ratio=fill;
 
 	X   [shape=box, label="X = [x1,x2]"];
-	f11 [label="Node11\n\n1) Forward Pass\ny11 = f11([x1, x2], W11)\ndy11/dW11 = df11([x1, x2], W11)/dW11\n\n6) Update\ndL/dy11 = SUM(dL2i/dy11)\ndL/dW11 = (dL/dy11)*(dy11/dW11)"];
-	f12 [label="Node12\n\n1) Forward Pass\ny12 = f12([x1, x2], W12)\ndy12/dW12 = df12([x1, x2], W12)/dW12\n\n6) Update\ndL/dy12 = SUM(dL2i/dy12)\ndL/dW12 = (dL/dy12)*(dy12/dW12)"];
-	f21 [label="Node21\n\n2) Forward Pass\ny21 = f21([y11, y12], W21)\ndy21/dW21 = df21([y11, y12], W21)/dW21\n\n4) Update\ndL/dW21 = (dL/dy21)*(dy21/dW21)\n\n5) Backpropagation\ndL21/dy11 = (dL/dy21)*(dy21/dy11)\ndL21/dy12 = (dL/dy21)*(dy21/dy12)"];
-	f22 [label="Node22\n\n2) Forward Pass\ny22 = f22([y11, y12], W22)\ndy22/dW22 = df22([y11, y12], W22)/dW22\n\n4) Update\ndL/dW22 = (dL/dy22)*(dy22/dW22)\n\n5) Backpropagation\ndL22/dy11 = (dL/dy22)*(dy22/dy11)\ndL22/dy12 = (dL/dy22)*(dy22/dy12)"];
-	L  [label="3) Loss Gradient\ndL/dy21 = dL(y21,ytrain1)/dy21\ndL/dy22 = dL(y22,ytrain2)/dy22"];
+	f11 [label="Node11\n\n1) Forward Pass\ny11 = f11([x1, x2], W11)\ndy11/dw11i = df11([x1, x2], W11)/dw11i\n\n6) Update\ndL/dy11 = SUM(dL2i/dy11)\ndL/dw11i = (dL/dy11)*(dy11/dw11i)\nw11i -= gamma*dL/dw11i"];
+	f12 [label="Node12\n\n1) Forward Pass\ny12 = f12([x1, x2], W12)\ndy12/dw12i = df12([x1, x2], W12)/dw12i\n\n6) Update\ndL/dy12 = SUM(dL2i/dy12)\ndL/dw12i = (dL/dy12)*(dy12/dw12i)\nw12i -= gamma*dL/dw12i"];
+	f21 [label="Node21\n\n2) Forward Pass\ny21 = f21([y11, y12], W21)\ndy21/dw21i = df21([y11, y12], W21)/dw21i\n\n4) Update\ndL/dw21i = (dL/dy21)*(dy21/dw21i)\nw21i -= gamma*dL/dw21i\n\n5) Backpropagation\ndL21/dy11 = (dL/dy21)*(dy21/dy11)\ndL21/dy12 = (dL/dy21)*(dy21/dy12)"];
+	f22 [label="Node22\n\n2) Forward Pass\ny22 = f22([y11, y12], W22)\ndy22/dw22i = df22([y11, y12], W22)/dw22i\n\n4) Update\ndL/dw22i = (dL/dy22)*(dy22/dw22i)\nw22i -= gamma*dL/dw22i\n\n5) Backpropagation\ndL22/dy11 = (dL/dy22)*(dy22/dy11)\ndL22/dy12 = (dL/dy22)*(dy22/dy12)"];
+	L  [label="3) Loss Function\ndL/dy21 = dL(y21,ytrain1)/dy21\ndL/dy22 = dL(y22,ytrain2)/dy22"];
 
 	{ rank=same f11 -> f12 [style=invis] };
 	{ rank=same f21 -> f22 [style=invis] };
