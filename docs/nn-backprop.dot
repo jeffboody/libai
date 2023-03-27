@@ -9,11 +9,11 @@ digraph NN
 	ratio=fill;
 
 	X   [shape=box, label="X = [x1,x2]"];
-	f11 [label="Node11\n\n1) Forward Pass\ny11 = f11([x1, x2], W11)\ndy11/dw11i = df11([x1, x2], W11)/dw11i\n\n6) Update\ndL/dy11 = SUM(dL2i/dy11)\ndL/dw11i = (dL/dy11)*(dy11/dw11i)\nw11i -= gamma*dL/dw11i"];
-	f12 [label="Node12\n\n1) Forward Pass\ny12 = f12([x1, x2], W12)\ndy12/dw12i = df12([x1, x2], W12)/dw12i\n\n6) Update\ndL/dy12 = SUM(dL2i/dy12)\ndL/dw12i = (dL/dy12)*(dy12/dw12i)\nw12i -= gamma*dL/dw12i"];
-	f21 [label="Node21\n\n2) Forward Pass\ny21 = f21([y11, y12], W21)\ndy21/dw21i = df21([y11, y12], W21)/dw21i\n\n4) Update\ndL/dw21i = (dL/dy21)*(dy21/dw21i)\nw21i -= gamma*dL/dw21i\n\n5) Backpropagation\ndL21/dy11 = (dL/dy21)*(dy21/dy11)\ndL21/dy12 = (dL/dy21)*(dy21/dy12)"];
-	f22 [label="Node22\n\n2) Forward Pass\ny22 = f22([y11, y12], W22)\ndy22/dw22i = df22([y11, y12], W22)/dw22i\n\n4) Update\ndL/dw22i = (dL/dy22)*(dy22/dw22i)\nw22i -= gamma*dL/dw22i\n\n5) Backpropagation\ndL22/dy11 = (dL/dy22)*(dy22/dy11)\ndL22/dy12 = (dL/dy22)*(dy22/dy12)"];
-	L  [label="3) Loss Function\ndL/dy21 = dL(y21,ytrain1)/dy21\ndL/dy22 = dL(y22,ytrain2)/dy22"];
+	f11 [label="Node11\n\n1) Forward Pass\ny11 = f1([x1, x2], W11)\n\n2) Cache Partial Derivatives\ndy11/dw11i = df1([x1, x2], W11)/dw11i\n\n9) Sum Gradients\ndL/dy11 = SUM(dL2i/dy11)\n\n10) Apply Chain Rule\ndL/dw11i = (dL/dy11)*(dy11/dw11i)\n\n11) Compute Gradient Descent\nw11i -= gamma*dL/dw11i"];
+	f12 [label="Node12\n\n1) Forward Pass\ny12 = f1([x1, x2], W12)\n\n2) Cache Partial Derivatives\ndy12/dw12i = df1([x1, x2], W12)/dw12i\n\n9) Sum Gradients\ndL/dy12 = SUM(dL2i/dy12)\n\n10) Apply Chain Rule\ndL/dw12i = (dL/dy12)*(dy12/dw12i)\n\n11) Compute Gradient Descent\nw12i -= gamma*dL/dw12i"];
+	f21 [label="Node21\n\n3) Forward Pass\ny21 = f2([y11, y12], W21)\n\n4) Cache Partial Derivatives\ndy21/dw21i = df2([y11, y12], W21)/dw21i\ndy21/dy1i = df2([y11, y12], W21)/dy1i\n\n6) Apply Chain Rule\ndL/dw21i = (dL/dy21)*(dy21/dw21i)\n\n7) Compute Gradient Descent\nw21i -= gamma*dL/dw21i\n\n8) Backpropagation\ndL21/dy1i = (dL/dy21)*(dy21/dy1i)"];
+	f22 [label="Node22\n\n3) Forward Pass\ny22 = f2([y11, y12], W22)\n\n4) Cache Partial Derivatives\ndy22/dw22i = df2([y11, y12], W22)/dw22i\ndy22/dy1i = df2([y11, y12], W22)/dy1i\n\n6) Apply Chain Rule\ndL/dw22i = (dL/dy22)*(dy22/dw22i)\n\n7) Compute Gradient Descent\nw22i -= gamma*dL/dw22i\n\n8) Backpropagation\ndL22/dy1i = (dL/dy22)*(dy22/dy1i)"];
+	L   [label="Loss Function\n\n5) Compute the Loss Gradient\ndL/dy2i = dL(y2i,ytraini)/dy2i"];
 
 	{ rank=same f11 -> f12 [style=invis] };
 	{ rank=same f21 -> f22 [style=invis] };

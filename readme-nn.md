@@ -14,7 +14,7 @@ interactive conversation and text-to-image synthesis. There
 exists many different types of neural networks which have
 been specifically designed to handle this wide range
 problems. Some notable examples include fully connected
-networks (FCN), convolutional neural networks (CNN),
+neural networks (FCNN), convolutional neural networks (CNN),
 recurrent neural networks (RNN), long short term memory
 (LSTM), auto encoders and generative adversarial networks
 (GAN).
@@ -32,13 +32,12 @@ The function graph is an directed acyclic graph (DAG) that
 consists of many nodes, each of which implements a function
 in the form of Y = f(X,W) that can solve a fragment of the
 larger problem. The inputs and outputs to the functions may
-be multi-dimensional arrays known as tensors. A set of
-parameters (W) are trained or learned during the gradient
-descent optimization procedure known as backpropagation. The
-functions implemented by each node may be specialized for
-solving particular tasks. Some example function types
-include the perceptron, non-linear activation functions,
-convolution and pooling.
+be multi-dimensional arrays known as tensors. The parameters
+(W) are trained or learned via the gradient descent
+optimization. The functions implemented by each node may be
+specialized for solving particular tasks. Some example
+function types include the perceptron, non-linear activation
+functions, convolution and pooling.
 
 Nodes are typically organized into layers of similar
 functions where the output of one layer is fed into the
@@ -57,9 +56,9 @@ inputs X = [x1,x2], two nodes in the first layer
 [Node11,Node12], two nodes in the second layer
 [Node21,Node22] and two outputs Y = [y1,y2]. The neural
 network implements Y = f(X,W) in terms of the node functions
-f = [f11,f12,f21,f22] and the parameters
-W = [W11,W12,W21,W22]. Each parameter variable may represent
-an array with zero or more elements.
+f = [f1,f2] and the parameters W = [W11,W12,W21,W22]. Each
+parameter variable may represent an array with zero or more
+elements.
 
 ![Neural Network Example](docs/nn.jpg?raw=true "Neural Network Example")
 
@@ -74,47 +73,44 @@ output.
 Backpropagation
 ---------------
 
-The backpropagation procedure is performed on the neural
-network to train or learn the function parameters and
-consists of repeatedly iterating the following steps for
-each training pattern.
-
-1. Make a prediction using a forward pass
-2. Evaluate the loss function (e.g. error)
-3. Backpropagate the loss gradient
-4. Update parameters using gradient descent
-
-A loss function is defined in terms of the predicted
-output and the desired training output. The choice of loss
-function is a hyperparameter that is selected when designing
-the neural network.
+The backpropagation procedure implements the gradient
+descent optimization to learn the function parameters by
+minimizing a loss function.
 
 	L(Ypredicted, Ytrain)
 
-The goal of the backpropagation procedure is to minimize the
-loss with respect to the function parameters. This goal is
-achieved by applying a gradient descent optimization such
-that the function parameters are updated to reduce the loss.
-
-	wi -= gamma*dL/dwi
-
-The learning rate (gamma) is a hyperparameter that is
-selected when designing the neural network.
-
-The loss function is defined in terms of the predicted
-output and desired training output rather than the function
-parameters. In order to compute the partial derivative of
-the loss with respect to the funciton parameters we must
-apply the chain rule to backpropagate the loss from the
-output to each function parameter. The chain rule allows for
-partial derivatives to be computed by chaining the partial
-derivatives of dependent variables. For example, using the
-dependent variables x, y and z.
+To minimize the loss function we require the gradient with
+respect to the function parameters. However, the loss
+function is defined in terms of the predicted output and
+desired training output. As a result, we must backpropagate
+the gradient from loss function to each function parameter
+by repeatedly applying the chain rule. The chain rule allows
+the desired gradient to be computed by chaining the partial
+derivatives of dependent variables. For example, the chain
+rule may be applied to the dependent variables x, y and z as
+follows.
 
 	dz/dx = (dz/dy)*(dy/dx)
 
-The following diagram shows how to apply the backpropagation
-procedure to the the earlier example.
+The function parameters may now be updated by applying
+gradient descent optimization where gamma is the learning
+rate.
+
+	wi -= gamma*dL/dwi
+
+The learning rate and loss function are hyperparameters that
+are selected when designing the neural network.
+
+In summary, the backpropagation procedure may be applied by
+repeating the following steps for each training pattern.
+
+1. Make a prediction using a forward pass
+2. Evaluate the loss gradient
+3. Update function parameters using gradient descent
+4. Backpropagate the loss gradient using the chain rule
+
+The following diagram demonstrates the backpropagation
+procedure using our example from earlier.
 
 ![Neural Network Backpropagation Example](docs/nn-backprop.jpg?raw=true "Neural Network Backpropagation Example")
 
@@ -287,10 +283,10 @@ References
 * [Bias Initialization in a Neural Network](https://medium.com/@glenmeyerowitz/bias-initialization-in-a-neural-network-2e5d26fed0f0)
 * [3 Common Problems with Neural Network Initialization](https://towardsdatascience.com/3-common-problems-with-neural-network-initialisation-5e6cacfcd8e6)
 
-Regularazation
+Regularization
 --------------
 
-[TODO - Regularazation]
+[TODO - Regularization]
 
 Several issues related to capacity will be discussed in the
 regularization section. However, it is very difficult to
@@ -309,7 +305,7 @@ physical computing resources.
 L1/L2 Regularization
 --------------------
 
-[TODO - L1/L2 Regularazation]
+[TODO - L1/L2 Regularization]
 
 	- backpropagation
 
