@@ -16,8 +16,8 @@ been specifically designed to handle this wide range
 problems. Some notable examples include fully connected
 neural networks (FCNN), convolutional neural networks (CNN),
 recurrent neural networks (RNN), long short term memory
-(LSTM), auto encoders and generative adversarial networks
-(GAN).
+(LSTM), variational autoencoder neural networks (VAE) and
+generative adversarial networks (GAN).
 
 [TODO - SUMMARY]
 
@@ -77,29 +77,27 @@ The backpropagation procedure implements the gradient
 descent optimization to learn the function parameters by
 minimizing a loss function.
 
-	L(Ypredicted, Ytrain)
+	L(Y, Yt)
 
 To minimize the loss function we require the gradient with
 respect to the function parameters. However, the loss
-function is defined in terms of the predicted output and
-desired training output. As a result, we must backpropagate
-the gradient from loss function to each function parameter
-by repeatedly applying the chain rule. The chain rule allows
-the desired gradient to be computed by chaining the partial
-derivatives of dependent variables. For example, the chain
-rule may be applied to the dependent variables x, y and z as
-follows.
+function is defined in terms of the predicted output (Y) and
+desired training output (Yt). As a result, we must
+backpropagate the gradient from loss function to each
+function parameter by repeatedly applying the chain rule.
+The chain rule allows the desired gradient to be computed by
+chaining the partial derivatives of dependent variables. For
+example, the chain rule may be applied to the dependent
+variables x, y and z as follows.
 
 	dz/dx = (dz/dy)*(dy/dx)
 
-The function parameters may now be updated by applying
-gradient descent optimization where gamma is the learning
-rate.
+The function parameters may now be updated by applying the
+gradient descent optimization where the learning rate
+(gamma) is a hyperparameter that is selected when designing
+the neural network.
 
 	wi -= gamma*dL/dwi
-
-The learning rate and loss function are hyperparameters that
-are selected when designing the neural network.
 
 In summary, the backpropagation procedure may be applied by
 repeating the following steps for each training pattern.
@@ -132,7 +130,41 @@ Gradient Descent
 Loss Function
 -------------
 
-[TODO - Loss Function]
+The loss function is a hyperparameter that is selected when
+designing the neural network and the choice of loss function
+depends upon the type of problem that the neural network is
+solving. The two main types of problems are regression and
+classification. Regression problems consist of predicting a
+real value quantity while classification problems consist of
+classifying a pattern in terms of one or more classes.
+Recall that the backpropagation procedure also requires the
+gradient of the loss function with respect to the predicted
+output.
+
+The Mean Squared Error (MSE) and Mean Absolute Error (MAE)
+are the most commonly used loss functions for regression
+problems. The MSE is typically used unless the training data
+has a large number of outliers. This is because the MSE is
+highly sensitive to outliers due to the squared term.
+
+	MSE
+	L      = (1/n)*SUM((yi - yti)^2)
+	dL/dyi = (2/n)*(yi - yti)
+
+	MAE
+	L      = (1/n)*SUM(|yi - yti|)
+	dL/dyi = (1/n)*(yi - yti)/|yi - yti|
+
+The Categorical Cross Entropy Loss is the most commonly used
+loss function for classification problems. Additionally, the
+Variational Autoencoder Loss is often used for autoencoder
+neural networks.
+
+References
+
+* [Loss Functions and Their Use In Neural Networks](https://towardsdatascience.com/loss-functions-and-their-use-in-neural-networks-a470e703f1e9)
+* [Variational autoencoders](https://www.jeremyjordan.me/variational-autoencoders/)
+* [Derivative Calculator](https://www.derivative-calculator.net/)
 
 Perceptron
 ----------

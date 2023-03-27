@@ -10,10 +10,10 @@ digraph NN
 
 	X   [shape=box, label="X = [x1,x2]"];
 	Y   [shape=box, label="Y = [y21,y22]"];
-	f11 [label="Node11\n\ny11 = f11(X, W11)"];
-	f12 [label="Node12\n\ny12 = f12(X, W12)"];
-	f21 [label="Node21\n\ny21 = f21([y11,y12], W21)"];
-	f22 [label="Node22\n\ny22 = f22([y11,y12], W22)"];
+	f11 [label="Node11\n\ny11 = f1(X, W11)"];
+	f12 [label="Node12\n\ny12 = f1(X, W12)"];
+	f21 [label="Node21\n\ny21 = f2([y11,y12], W21)"];
+	f22 [label="Node22\n\ny22 = f2([y11,y12], W22)"];
 
 	X   -> f11;
 	X   -> f12;
