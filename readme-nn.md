@@ -75,57 +75,72 @@ Backpropagation
 
 The backpropagation procedure implements the gradient
 descent optimization to learn the function parameters by
-minimizing a loss function.
+minimizing a loss function with respect to the predicted
+output (Y) and the desired training output (Yt).
 
-	L(Y, Yt)
+	L(Y,Yt)
 
-To minimize the loss function we require the gradient with
-respect to the function parameters. However, the loss
-function is defined in terms of the predicted output (Y) and
-desired training output (Yt). As a result, we must
-backpropagate the gradient from loss function to each
-function parameter by repeatedly applying the chain rule.
-The chain rule allows the desired gradient to be computed by
-chaining the partial derivatives of dependent variables. For
-example, the chain rule may be applied to the dependent
-variables x, y and z as follows.
+The gradient descent opmization states that the function
+parameters may be updated to minimize the loss by
+subtracting the gradient of the loss with respect to each
+function parameter. The learning rate (gamma) is a
+hyperparameter that is selected when designing the neural
+network.
+
+	wi -= gamma*dL/dwi
+
+Recall that the loss function is defined in terms of the
+predicted output and desired training output so it is not
+possible to compute the desired gradient directly. As a
+result, we must backpropagate the gradient from loss
+function to each function parameter by repeatedly applying
+the chain rule. The chain rule allows the desired gradient
+to be computed by chaining the gradients of dependent
+variables. For example, the chain rule may be applied to the
+dependent variables x, y and z as follows.
 
 	dz/dx = (dz/dy)*(dy/dx)
 
-The function parameters may now be updated by applying the
-gradient descent optimization where the learning rate
-(gamma) is a hyperparameter that is selected when designing
-the neural network.
+The following gradients may be computed during the forward
+pass (i.e. the forward gradients) which will be cached for
+use by the backpropagation procedure.
 
-	wi -= gamma*dL/dwi
+	dy/dxi = df(X,W)/dxi
+	dy/dwi = df(X,W)/dwi
+
+When a node is connected to more than one output node, we
+must combine the backpropagated loss gradient.
+
+	dL/dy = SUM(dLi/dy)
+
+The update gradient may now be determined using the loss
+gradient, the forward gradients and the chain rule.
+
+	dL/dwi = (dL/dy)*(dy/dwi)
+
+The backpropagated gradient may also be determined using the
+loss gradient, the forward gradients and the chain rule.
+
+	dL/dxi = (dL/dy)*(dy/dxi)
 
 In summary, the backpropagation procedure may be applied by
 repeating the following steps for each training pattern.
 
-1. Make a prediction using a forward pass
-2. Evaluate the loss gradient
-3. Update function parameters using gradient descent
-4. Backpropagate the loss gradient using the chain rule
+* Forward Pass
+* Forward Gradients
+* Compute Loss
+* Combine Loss
+* Update Parameters
+* Backpropagate Loss
 
 The following diagram demonstrates the backpropagation
 procedure using our example from earlier.
 
-![Neural Network Backpropagation Example](docs/nn-backprop.jpg?raw=true "Neural Network Backpropagation Example")
+![Neural Network Backpropagation](docs/nn-backprop.jpg?raw=true "Neural Network Backpropagation")
 
 References
 
 * [CS231n Winter 2016: Lecture 4: Backpropagation, Neural Networks 1](https://www.youtube.com/watch?v=i94OvYb6noo)
-
-Gradient Descent
-----------------
-
-[TODO - Gradient Descent]
-	- local minima
-	- vanishing gradient
-	- exploding gradient
-	- nodes are differentiable
-	- learning rate (variable)
-	- overtraining/undertraining
 
 Loss Function
 -------------
@@ -148,12 +163,12 @@ has a large number of outliers. This is because the MSE is
 highly sensitive to outliers due to the squared term.
 
 	MSE
-	L      = (1/n)*SUM((yi - yti)^2)
-	dL/dyi = (2/n)*(yi - yti)
+	L(Y,Yt) = (1/n)*SUM((yi - yti)^2)
+	dL/dyi  = (2/n)*(yi - yti)
 
 	MAE
-	L      = (1/n)*SUM(|yi - yti|)
-	dL/dyi = (1/n)*(yi - yti)/|yi - yti|
+	L(Y,Yt) = (1/n)*SUM(|yi - yti|)
+	dL/dyi  = (1/n)*(yi - yti)/|yi - yti|
 
 The Categorical Cross Entropy Loss is the most commonly used
 loss function for classification problems. Additionally, the
@@ -169,32 +184,25 @@ References
 Perceptron
 ----------
 
-Perceptron nodes roughly mimic the functional capabilities
-of biological neurons, however, for our purposes it is
-sufficient to describe the perceptron in terms of the node
-function. As such, the perceptron function performs a
-weighted sum of the inputs, plus an additional bias and is
-followed by a non-linear activation function.
+The perceptron is a node which implements a function that
+roughly mimics the functional capabilities of biological
+neurons. However, for our purposes it is sufficient to
+describe the perceptron in terms of the node function. The
+perceptron node is actually composed of two distinct
+functions. The first function is a weighted sum of inputs
+plus a bias term and the second function is a non-linear
+activation function. The weights (w) and the bias (b) are
+parameters that are learned by the neural network.  The
+activation function on the other hand is a hyperparameter
+that is selected when designing the neural network.
 
-[TODO - forward pass]
+The following diagram shows the perceptron node.
 
-The pseudo-code for the perceptron function is as follows.
-
-	y = b;
-	for(i = 0; i < n; ++i)
-	{
-		y += w[i]*x[i];
-	}
-	y = fact(y);
+![Perceptron](docs/nn-perceptron.jpg?raw=true "Perceptron")
 
 [TODO - backpropagation]
-[TODO - composite node]
 
-The weights (w) and the bias (b) are parameters that are
-learned by the neural network. The activation function on
-the other hand is a hyperparameter that is selected when
-designing the neural network. Activation functions will be
-described in more detail in the next section.
+![Perceptron Backpropagation](docs/nn-perceptron-backprop.jpg?raw=true "Perceptron Backpropagation")
 
 It is useful to note the similarity between the perceptron
 and the equation of a line. The perceptron weights are
@@ -261,6 +269,18 @@ References
 
 * [Activation Functions in Neural Networks](https://towardsdatascience.com/activation-functions-neural-networks-1cbd9f8d91d6)
 * [How to Choose an Activation Function for Deep Learning](https://machinelearningmastery.com/choose-an-activation-function-for-deep-learning/)
+
+Gradient Descent
+----------------
+
+[TODO - Gradient Descent]
+	- local minima
+	- vanishing gradient
+	- exploding gradient
+	- nodes are differentiable
+	- learning rate (variable)
+	- overtraining/undertraining
+	- regularization
 
 Parameter Initialization
 ------------------------
