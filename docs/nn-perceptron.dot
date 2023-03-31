@@ -13,7 +13,7 @@ digraph NN
 	xi   [shape=box, label="..."];
 	xn   [shape=box, label="xn"];
 	y    [shape=box, label="y"];
-	f    [label="Node1\n\nW = [[w1,w2,...,wn],b]\ny1 = f(X,W) = SUM(xi*wi) + b"];
+	f    [label="Node1\n\nW = [[w1,w2,...,wn],b]\ny1 = SUM(xi*wi) + b"];
 	fact [label="Node2\n\ny = fact(y1)"];
 
 	x1   -> f;

@@ -13,8 +13,8 @@ digraph NN
 	xi   [shape=box, label="..."];
 	xn   [shape=box, label="xn"];
 	y    [shape=box, label="y"];
-	f    [label="Node1\n\n1) Forward Pass\ny1 = SUM(xi*wi) + b\n\n2) Forward Gradients\ndy1/dxi = wi\ndy1/dwi = xi\ndy1/db = 1\n\n7) Combine Loss\ndL/dy1 = dL2/dy1\n\n8) Update Parameters\ndL/dwi = (dL/dy1)*(dy1/dwi)\ndL/db = (dL/dy1)*(dy1/db)\nwi -= gamma*dL/dwi\nb -= gamma*dL/db\n\n9) Backpropagate Loss\ndL1/dxi = (dL/dy1)*(dy1/dxi)"];
-	fact [label="Node2\n\n2) Forward Pass\ny = fact(y1)\n\n3) Forward Gradients\ndy/dy1 = dfact(y1)\n\n4) Combine Loss\ndL/dy = SUM(dLi/dy)\n\n5) Update Parameters\nno parameters\n\n6) Backpropagate Loss\ndL2/dy1 = (dL/dy)*(dy/dy1)"];
+	f    [label="Node1\n\n1) Forward Pass\ny1 = SUM(xi*wi) + b\n\n2) Forward Gradients\ndy1/dxi = wi\ndy1/dwi = xi\ndy1/db = 1\n\n8) Combine Loss\ndL/dy1 = dL2/dy1\n\n9) Update Parameters\ndL/dwi = (dL/dy1)*(dy1/dwi)\ndL/db = (dL/dy1)*(dy1/db)\nwi -= gamma*dL/dwi\nb -= gamma*dL/db\n\n10) Backpropagate Loss\ndL1/dxi = (dL/dy1)*(dy1/dxi)"];
+	fact [label="Node2\n\n3) Forward Pass\ny = fact(y1)\n\n4) Forward Gradients\ndy/dy1 = dfact(y1)\n\n5) Combine Loss\ndL/dy = SUM(dLi/dy)\n\n6) Update Parameters\nno parameters\n\n7) Backpropagate Loss\ndL2/dy1 = (dL/dy)*(dy/dy1)"];
 
 	{ rank=same x1 -> x2 [style=invis] };
 	{ rank=same x2 -> xi [style=invis] };

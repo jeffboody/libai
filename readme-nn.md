@@ -52,10 +52,11 @@ depth) and nodes increases, so does the capacity of a neural
 network to solve more complicated problems.
 
 The following function graph shows a simple neural network
-with two inputs X = [x1,x2], two nodes in the first layer
-[Node11,Node12], two nodes in the second layer
-[Node21,Node22] and two outputs Y = [y1,y2]. The neural
-network implements Y = f(X,W) in terms of the node functions
+with two inputs X = [x1,x2] (e.g. input layer), two nodes in
+the first layer [Node11,Node12] (e.g. hidden layer), two
+nodes in the second layer [Node21,Node22] (e.g. output
+layer) and two outputs Y = [y1,y2]. The neural network
+implements Y = f(X,W) in terms of the node functions
 f = [f1,f2] and the parameters W = [W11,W12,W21,W22]. Each
 parameter variable may represent an array with zero or more
 elements.
@@ -217,6 +218,12 @@ y-intercept.
 
 	y = m*x + b
 
+The weighted average is also analogous to the dot product
+operation between the two vectors which is maximized when
+the vectors point in the same direction.
+
+	y = W.X + b = |W|*|X|*cos(theta) + b
+
 From the biological perspective, a neuron may activate at
 different strength depending on if some threshold was
 exceeded. The activation function is generally designed to
@@ -363,12 +370,63 @@ References
 L1/L2 Regularization
 --------------------
 
-[TODO - L1/L2 Regularization]
+L1/L2 regularization is a technique designed to reduce data
+overfitting by adding a term to the loss function which
+penalizes the variance of the function parameters.
 
-	- backpropagation
+Loss Function with L1 Regularization
+
+	LR(lambda,W,Y,Yt) = L(Y,Yt) + lambda*SUM(|wi|)
+	dLR/dwi = dL/dwi + lambda*wi/|wi|
+
+Loss Function with L2 Regularization
+
+	LR(lambda,W,Y,Yt) = L(Y,Yt) + lambda*SUM(wi^2)
+	dLR/dwi = dL/dwi + 2*lambda*wi
+
+Keep in mind that the regularization term affects the
+backpropagation procedure by adding an additional term to
+the update parameter step since dL/dwi is replaced by
+dLR/dwi. Some results also suggest that the regularization
+term is not required for the perceptron bias parameter since
+it does not seeem to impact the final result. The lambda
+term is a regularization hyperparameter (0 to 1) that is
+selected when designing the neural network.
+
+To explain how regularization works, lets consider how the
+L2 regularization term affects the following example.
+
+	X  = [1,1,1,1]
+	W1 = [1,0,0,0]
+	W2 = [0.25,0.25,0.25,0.25]
+
+The perceptron output is the same for each parameter vector
+however the regularization term prefers W2.
+
+	SUM(xi*w1i) == SUM(xi*w2i) = 1.0
+	SUM(w1i^2)  = 1.0
+	SUM(w2i^2)  = 0.25
+
+The W2 parameters are prefered since they are more
+generalized across inputs and therefore reduce the variance
+caused by a single outlier.
+
+It is important to note that L2 regularization (presumably
+L1 as well) has no regularization effect when combined with
+other normalization techniques (e.g. batch/layer/weight).
+However, if no regularization is used, then the norm of the
+weights tends to increase over time. As a result, the
+effective learning rate decreases. While this may be a
+desirable property, it can be difficult to control and may
+interfer with explicit attempts to control the
+backpropagation learning rate. As such, it seems best to
+combine L2 regularization with a normalization technique.
 
 References
 
+* [CS231n Winter 2016: Lecture 3: Linear Classification 2, Optimization](https://www.youtube.com/watch?v=qlLChbHhbg4&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC&index=3)
+* [Regularization in a Neural Network | Dealing with overfitting](https://www.youtube.com/watch?v=EehRcPo1M-Q)
+* [L2 Regularization versus Batch and Weight Normalization](https://arxiv.org/pdf/1706.05350.pdf)
 * [Chapter 8 Training Neural Networks Part 2](https://srdas.github.io/DLBook/ImprovingModelGeneralization.html)
 
 Data Centering
