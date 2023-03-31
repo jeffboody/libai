@@ -36,8 +36,8 @@ be multi-dimensional arrays known as tensors. The parameters
 (W) are trained or learned via the gradient descent
 optimization. The functions implemented by each node may be
 specialized for solving particular tasks. Some example
-function types include the perceptron, non-linear activation
-functions, convolution and pooling.
+function types include the perceptron, activation functions,
+convolution and pooling.
 
 Nodes are typically organized into layers of similar
 functions where the output of one layer is fed into the
@@ -51,8 +51,8 @@ tasks. As the number of layers (e.g. the neural network
 depth) and nodes increases, so does the capacity of a neural
 network to solve more complicated problems.
 
-The following diagram shows a simple neural network with two
-inputs X = [x1,x2], two nodes in the first layer
+The following function graph shows a simple neural network
+with two inputs X = [x1,x2], two nodes in the first layer
 [Node11,Node12], two nodes in the second layer
 [Node21,Node22] and two outputs Y = [y1,y2]. The neural
 network implements Y = f(X,W) in terms of the node functions
@@ -133,7 +133,7 @@ repeating the following steps for each training pattern.
 * Update Parameters
 * Backpropagate Loss
 
-The following diagram demonstrates the backpropagation
+The following function graph shows the backpropagation
 procedure using our example from earlier.
 
 ![Neural Network Backpropagation](docs/nn-backprop.jpg?raw=true "Neural Network Backpropagation")
@@ -152,9 +152,6 @@ solving. The two main types of problems are regression and
 classification. Regression problems consist of predicting a
 real value quantity while classification problems consist of
 classifying a pattern in terms of one or more classes.
-Recall that the backpropagation procedure also requires the
-gradient of the loss function with respect to the predicted
-output.
 
 The Mean Squared Error (MSE) and Mean Absolute Error (MAE)
 are the most commonly used loss functions for regression
@@ -184,38 +181,50 @@ References
 Perceptron
 ----------
 
-The perceptron is a node which implements a function that
-roughly mimics the functional capabilities of biological
-neurons. However, for our purposes it is sufficient to
-describe the perceptron in terms of the node function. The
-perceptron node is actually composed of two distinct
-functions. The first function is a weighted sum of inputs
-plus a bias term and the second function is a non-linear
-activation function. The weights (w) and the bias (b) are
-parameters that are learned by the neural network.  The
-activation function on the other hand is a hyperparameter
-that is selected when designing the neural network.
+The perceptron is the main type of node which is used by
+neural networks and implements a function that roughly
+mimics biological neurons. This function consists of a
+weighted sum of inputs plus a bias term followed by an
+activation function.
 
-The following diagram shows the perceptron node.
+	W      = [[w1,w2,...,wn],b]
+	f(X,W) = fact(SUM(xi*wi) + b)
+
+The weights (w) and the bias (b) are the parameters that
+are learned by the neural network while the activation
+function is a hyperparameter that is selected when
+designing the neural network.
+
+The following function graph shows the perceptron which can
+most easily be visualized as a compound node.
 
 ![Perceptron](docs/nn-perceptron.jpg?raw=true "Perceptron")
 
-[TODO - backpropagation]
+The following function graph shows the backpropagation
+procedure for the perceptron node. Note that the activation
+function does not include any function parameters so the
+update step may be skipped. The perceptron node
+implementation may also choose to combine the compound node
+into a single node by simply substituting equations.
 
 ![Perceptron Backpropagation](docs/nn-perceptron-backprop.jpg?raw=true "Perceptron Backpropagation")
 
-It is useful to note the similarity between the perceptron
-and the equation of a line. The perceptron weights are
-analogous to the slope of the line while the bias is
-analogous to the y-intercept. However, the inclusion of the
-activation function enables the perceptron to solve more
-complicated non-linear problems.
+To gain a better understanding of how the perceptron works
+it is useful to compare the perceptron function with the
+equation of a line. The perceptron weights are analogous to
+the slope of the line while the bias is analogous to the
+y-intercept.
 
 	y = m*x + b
 
-Many types of problems can be solved by simply connecting
-multiple layers of perceptron nodes (e.g. a multi-layer
-perceptron or MLP).
+From the biological perspective, a neuron may activate at
+different strength depending on if some threshold was
+exceeded. The activation function is generally designed to
+mimic this behavior, however, in practice the designer may
+choose any function desired to achieve a particular effect.
+For example, an activation function may be selected to model
+a non-linear operation, to threshold outputs or to predict a
+probability.
 
 References
 
@@ -239,13 +248,13 @@ logistic function a good choice.
 ReLU (Rectified Linear Unit)
 
 	f(x)  = max(0, x)
-	f'(x) = 0 for x < 0
+	df/dx = 0 for x < 0
 	      = 1 for x >= 0
 
 PReLU (Parametric Rectified Linear Unit or Leaky ReLU)
 
 	f(x)  = max(a*x, x)
-	f'(x) = a for x < 0
+	df/dx = a for x < 0
 	      = 1 for x >= 0
 
 	a is typically 0.01
@@ -253,17 +262,17 @@ PReLU (Parametric Rectified Linear Unit or Leaky ReLU)
 Tanh
 
 	f(x)  = tanh(x) = 2/(1 + exp(-2*x)) - 1
-	f'(x) = 1 - f(x)
+	df/dx = 1 - f(x)
 
 Logistic
 
 	f(x)  = 1/(1 + exp(-x))
-	f'(x) = f(x)*(1 - f(x))
+	df/dx = f(x)*(1 - f(x))
 
 Linear (Identity)
 
 	f(x)  = x
-	f'(x) = 1
+	df/dx = 1
 
 References
 
@@ -281,6 +290,22 @@ Gradient Descent
 	- learning rate (variable)
 	- overtraining/undertraining
 	- regularization
+
+[TODO - Regularization]
+
+Several issues related to capacity will be discussed in the
+regularization section. However, it is very difficult to
+know the amount of capacity required to solve complex
+problems. Too little capacity can lead to underfitting and
+too much capacity can lead to overfitting. In general, we
+wish to have more capacity than is required solve a problem
+then rely on regularization techniques to address the
+overfitting problem. Regularization techniques cause the
+neural network to produce generalized solutions rather than
+memorizing training patterns (e.g. patterns not observed in
+test data) or learing of an embedded noise signal. In
+practice, the capacity of a neural network may be limited by
+physical computing resources.
 
 Parameter Initialization
 ------------------------
@@ -334,25 +359,6 @@ References
 * [Initializing neural networks](https://www.deeplearning.ai/ai-notes/initialization/index.html)
 * [Bias Initialization in a Neural Network](https://medium.com/@glenmeyerowitz/bias-initialization-in-a-neural-network-2e5d26fed0f0)
 * [3 Common Problems with Neural Network Initialization](https://towardsdatascience.com/3-common-problems-with-neural-network-initialisation-5e6cacfcd8e6)
-
-Regularization
---------------
-
-[TODO - Regularization]
-
-Several issues related to capacity will be discussed in the
-regularization section. However, it is very difficult to
-know the amount of capacity required to solve complex
-problems. Too little capacity can lead to underfitting and
-too much capacity can lead to overfitting. In general, we
-wish to have more capacity than is required solve a problem
-then rely on regularization techniques to address the
-overfitting problem. Regularization techniques cause the
-neural network to produce generalized solutions rather than
-memorizing training patterns (e.g. patterns not observed in
-test data) or learing of an embedded noise signal. In
-practice, the capacity of a neural network may be limited by
-physical computing resources.
 
 L1/L2 Regularization
 --------------------
