@@ -10,20 +10,62 @@ optimization across a function graph. Neural networks may be
 applied to solve a wide range of problems such as linear
 regression, non-linear prediction, classification,
 segmentation, noise removal, natural language translation,
-interactive conversation and text-to-image synthesis. There
-exists many different types of neural networks which have
-been specifically designed to handle this wide range
-problems. Some notable examples include fully connected
-neural networks (FCNN), convolutional neural networks (CNN),
-recurrent neural networks (RNN), long short term memory
-(LSTM), variational autoencoder neural networks (VAE) and
-generative adversarial networks (GAN).
+interactive conversation and text-to-image synthesis. Many
+different types of neural networks exist such as the
+following.
+
+* Fully Connected Neural Networks (FCNN)
+* Convolutional Neural Networks (CNN)
+* Recurrent Neural Networks (RNN)
+* Long Short Term Memory (LSTM)
+* Variational Autoencoder Neural Networks (VAE)
+* Generative Adversarial Networks (GAN)
 
 [TODO - SUMMARY]
 
 References
 
 * [CS231n Winter 2016](https://www.youtube.com/playlist?list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC)
+
+Gradient Descent
+----------------
+
+[TODO - Gradient Descent/Stocastic Gradient Descent - SGD]
+	- mountain analogy
+	- iterative
+	- differentiable functions
+	- multi-dimensional
+	- learning rate (variable)
+	---
+	- zig-zag pattern
+	- local minima
+	- saddle point
+	- slow convergence
+	- mini batch (reduces variance)
+	- Centering and Scaling Data
+	- Momentum, RMSProp, Adam, etc.
+	---
+	- Batch Normalization
+	- vanishing/exploding gradient
+	---
+	- overfitting/underfitting
+	- regularization
+	- weight decay
+	- capacity
+
+Several issues related to capacity will be discussed in the
+regularization section. However, it's very difficult to know
+the amount of capacity required to solve complex problems.
+Too little capacity can lead to underfitting and too much
+capacity can lead to overfitting. In general, we wish to
+have more capacity than is required solve a problem then
+rely on regularization techniques to address the overfitting
+problem. Regularization techniques cause the neural network
+to produce generalized solutions rather than memorizing
+training patterns (e.g. patterns not observed in test data)
+or learing of an embedded noise signal. In practice, the
+capacity of a neural network may be limited by physical
+computing resources.
 
 Function Graph
 --------------
@@ -35,9 +77,7 @@ larger problem. The inputs and outputs to the functions may
 be multi-dimensional arrays known as tensors. The parameters
 (W) are trained or learned via the gradient descent
 optimization. The functions implemented by each node may be
-specialized for solving particular tasks. Some example
-function types include the perceptron, activation functions,
-convolution and pooling.
+specialized for solving particular tasks.
 
 Nodes are typically organized into layers of similar
 functions where the output of one layer is fed into the
@@ -49,7 +89,15 @@ which demonstrated how to use sparsely connected layers of
 convolutional nodes to greatly improve image classification
 tasks. As the number of layers (e.g. the neural network
 depth) and nodes increases, so does the capacity of a neural
-network to solve more complicated problems.
+network to solve more complicated problems. Example layers
+include the following.
+
+* Perceptron
+* Activation
+* Batch Normalization
+* Convolution
+* Pooling
+* Flattening
 
 The following function graph shows a simple neural network
 with two inputs X = [x1,x2] (e.g. input layer), two nodes in
@@ -91,7 +139,7 @@ network.
 	wi -= gamma*dL/dwi
 
 Recall that the loss function is defined in terms of the
-predicted output and desired training output so it is not
+predicted output and desired training output so it's not
 possible to compute the desired gradient directly. As a
 result, we must backpropagate the gradient from loss
 function to each function parameter by repeatedly applying
@@ -211,7 +259,7 @@ into a single node by simply substituting equations.
 ![Perceptron Backpropagation](docs/nn-perceptron-backprop.jpg?raw=true "Perceptron Backpropagation")
 
 To gain a better understanding of how the perceptron works
-it is useful to compare the perceptron function with the
+it's useful to compare the perceptron function with the
 equation of a line. The perceptron weights are analogous to
 the slope of the line while the bias is analogous to the
 y-intercept.
@@ -244,8 +292,8 @@ The following activation functions and their derivatives
 may be used depending on the situation. The hidden layers
 typically use one activation function and while the output
 layer may use a different activation function. For the
-hidden layers it is recommended to use either ReLU or Tanh.
-For the output layer it is recommended to use Linear, Tanh,
+hidden layers it's recommended to use either ReLU or Tanh.
+For the output layer it's recommended to use Linear, Tanh,
 Sigmoid or Softmax (classification). The activation function
 which should be selected for the output layer may depend on
 the desired range of your output. For example, probability
@@ -257,12 +305,14 @@ ReLU (Rectified Linear Unit)
 	f(x)  = max(0, x)
 	df/dx = 0 for x < 0
 	      = 1 for x >= 0
+	range = [0,infinity]
 
 PReLU (Parametric Rectified Linear Unit or Leaky ReLU)
 
 	f(x)  = max(a*x, x)
 	df/dx = a for x < 0
 	      = 1 for x >= 0
+	range = [-infinity,infinity]
 
 	a is typically 0.01
 
@@ -270,49 +320,51 @@ Tanh
 
 	f(x)  = tanh(x) = 2/(1 + exp(-2*x)) - 1
 	df/dx = 1 - f(x)
+	range = [-1,1]
 
 Logistic
 
 	f(x)  = 1/(1 + exp(-x))
 	df/dx = f(x)*(1 - f(x))
+	range = [0,1]
 
 Linear (Identity)
 
 	f(x)  = x
 	df/dx = 1
+	range = [-infinity,infinity]
 
 References
 
 * [Activation Functions in Neural Networks](https://towardsdatascience.com/activation-functions-neural-networks-1cbd9f8d91d6)
 * [How to Choose an Activation Function for Deep Learning](https://machinelearningmastery.com/choose-an-activation-function-for-deep-learning/)
 
-Gradient Descent
-----------------
+Data Centering and Scaling
+--------------------------
 
-[TODO - Gradient Descent]
-	- local minima
-	- vanishing gradient
-	- exploding gradient
-	- nodes are differentiable
-	- learning rate (variable)
-	- overtraining/undertraining
-	- regularization
+Data centering and scaling should be performed on the input
+layer on a per-channel (i) basis to normalize the data to
+zero mean and unit variance. When the input layer contains
+images it's common to perform the zero mean but skip the
+unit variance. It may also be beneficial to perform data
+centering and scaling on a per-image basis rather than
+per-channel (e.g. face recognition). Data whitening may also
+be applied by performing PCA and transforming the covariance
+matrix to the identity matrix.
 
-[TODO - Regularization]
+	Yi = (Xi - Mean(Xi))/StdDev(Xi)
 
-Several issues related to capacity will be discussed in the
-regularization section. However, it is very difficult to
-know the amount of capacity required to solve complex
-problems. Too little capacity can lead to underfitting and
-too much capacity can lead to overfitting. In general, we
-wish to have more capacity than is required solve a problem
-then rely on regularization techniques to address the
-overfitting problem. Regularization techniques cause the
-neural network to produce generalized solutions rather than
-memorizing training patterns (e.g. patterns not observed in
-test data) or learing of an embedded noise signal. In
-practice, the capacity of a neural network may be limited by
-physical computing resources.
+Add a small epsilon to avoid divide-by-zero problems.
+
+This transformation improves the learing/convergence rate by
+avoiding the well known zig-zag pattern where the gradient
+descent trajectory oscilates back and forth along one
+dimension.
+
+References
+
+* [Batch Norm Explained Visually - How it works, and why neural networks need it](https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739)
+* [CS231n Winter 2016: Lecture 5: Neural Networks Part 2](https://www.youtube.com/watch?v=gYpoJMlgyXA&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC&index=5)
 
 Parameter Initialization
 ------------------------
@@ -323,10 +375,6 @@ Incorrect weight initialization can lead to several problems
 including the symmetry problem (e.g. weights initialized to
 zero resulting in symmetric partial derivatives), slow
 learning and divergence (e.g. the output grows to infinity).
-
-The perceptron bias on the other hand are typically
-initialized to zero as they are not impacted by the symmetry
-problem.
 
 The following perceptron weight initialization methods are
 recommended depending on the desired activation function.
@@ -356,6 +404,10 @@ He Method
 	sigma = sqrt(2/m)
 	w     = randNormalDistribution(mu, sigma)
 
+The perceptron bias on the other hand are typically
+initialized to zero as they are not impacted by the symmetry
+problem.
+
 Other parameter types may exist within the neural network
 however each may have its own unique initialization
 requirements.
@@ -367,12 +419,86 @@ References
 * [Bias Initialization in a Neural Network](https://medium.com/@glenmeyerowitz/bias-initialization-in-a-neural-network-2e5d26fed0f0)
 * [3 Common Problems with Neural Network Initialization](https://towardsdatascience.com/3-common-problems-with-neural-network-initialisation-5e6cacfcd8e6)
 
+Mini Batch
+----------
+
+[TODO - Mini Batch]
+
+	- SGD vs Batch vs Mini Batch
+	- batch size is a hyperparameter
+	- default batch size of 32
+
+References
+
+* [A Gentle Introduction to Mini-Batch Gradient Descent and How to Configure Batch Size](https://machinelearningmastery.com/gentle-introduction-mini-batch-gradient-descent-configure-batch-size/)
+
+Batch Normalization
+-------------------
+
+Batch Normalization is a neural network layer that is
+closely related to data centering and scaling. The main
+difference is that Batch Normalization includes a pair of
+learnable parameters to scale (gamma) and offset (beta) data
+samples. This function is applied on a per-channel or
+per-filter basis. It is important to note that the function
+is differentiable as is required for backpropagation.
+
+	Yi = gammai*(Xi - Mean(Xi))/StdDev(Xi) + betai
+
+Add a small epsilon to avoid divide-by-zero problems.
+
+The mean and standard deviation are calculated during
+training from the mini batch. Running averages of these
+values are also calculated during the training which are
+subsequently used when making predictions.
+
+Note that the neural network may learn the identity
+operation (e.g. beta is the mean and gamma is the inverse of
+standard deviation) should this be optimal.
+
+There is some discussion as to the best place for the Batch
+Normalization layer. The original paper placed this layer
+between the perceptron weighted average and the activation
+function, however, more recent results suggest that it's
+better to place after the activation function. When placed
+per the original paper, the perceptron bias is redundant
+with the beta offset.
+
+It was also mentioned that Batch Normalization can be
+performed on the input layer in place of data centering and
+scaling. However, it's unclear if the the mean and standard
+deviation should be used from the training set or mini batch
+in this case.
+
+Weight Normalization and Layer Normalization are additional
+related techniques however these won't be covered at this
+time since it's unclear when or if these techniques are
+better.
+
+References
+
+* [Batch Norm Explained Visually - How it works, and why neural networks need it](https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739)
+* [Batch normalization: What it is and how to use it](https://www.youtube.com/watch?v=yXOMHOpbon8)
+* [CS231n Winter 2016: Lecture 5: Neural Networks Part 2](https://www.youtube.com/watch?v=gYpoJMlgyXA&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC&index=5)
+* [L2 Regularization versus Batch and Weight Normalization](https://arxiv.org/pdf/1706.05350.pdf)
+
 L1/L2 Regularization
 --------------------
 
-L1/L2 regularization is a technique designed to reduce data
-overfitting by adding a term to the loss function which
-penalizes the variance of the function parameters.
+L1/L2 regularization is a technique that was originally
+designed to reduce data overfitting by adding a term to the
+loss function which penalizes the variance of the function
+parameters. However, it's important to note that L2
+regularization (presumably L1 as well) has no regularization
+effect when combined with normalization techniques such as
+Batch Normalization. However, if L2 regularization is not
+used, then the norm of the weights tends to increase over
+time. As a result, the effective learning rate decreases.
+While this may be a desirable property, it can be difficult
+to control and may interfere with explicit attempts to
+control the backpropagation learning rate. As such, it seems
+best to combine L2 regularization with a normalization
+technique.
 
 Loss Function with L1 Regularization
 
@@ -389,12 +515,13 @@ backpropagation procedure by adding an additional term to
 the update parameter step since dL/dwi is replaced by
 dLR/dwi. Some results also suggest that the regularization
 term is not required for the perceptron bias parameter since
-it does not seeem to impact the final result. The lambda
+it does not seem to impact the final result. The lambda
 term is a regularization hyperparameter (0 to 1) that is
 selected when designing the neural network.
 
-To explain how regularization works, lets consider how the
-L2 regularization term affects the following example.
+To explain how regularization works in the absense of
+normalization, lets consider how the L2 regularization term
+affects the following example.
 
 	X  = [1,1,1,1]
 	W1 = [1,0,0,0]
@@ -411,17 +538,6 @@ The W2 parameters are prefered since they are more
 generalized across inputs and therefore reduce the variance
 caused by a single outlier.
 
-It is important to note that L2 regularization (presumably
-L1 as well) has no regularization effect when combined with
-other normalization techniques (e.g. batch/layer/weight).
-However, if no regularization is used, then the norm of the
-weights tends to increase over time. As a result, the
-effective learning rate decreases. While this may be a
-desirable property, it can be difficult to control and may
-interfer with explicit attempts to control the
-backpropagation learning rate. As such, it seems best to
-combine L2 regularization with a normalization technique.
-
 References
 
 * [CS231n Winter 2016: Lecture 3: Linear Classification 2, Optimization](https://www.youtube.com/watch?v=qlLChbHhbg4&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC&index=3)
@@ -429,10 +545,56 @@ References
 * [L2 Regularization versus Batch and Weight Normalization](https://arxiv.org/pdf/1706.05350.pdf)
 * [Chapter 8 Training Neural Networks Part 2](https://srdas.github.io/DLBook/ImprovingModelGeneralization.html)
 
-Data Centering
---------------
+Dropout
+-------
 
-[TODO - Data Centering]
+Dropout is a regularization technique that may be applied to
+a neural network layer where a subset of nodes may be
+randomly disabled. Regularization is achieved through the
+reduction in capacity which forces the neural network to
+increase generalization. The dropout procedure may also be
+viewed as selecting a random layer from a large ensemble of
+layers that share parameters.
 
-	- zero mean
-	- unit stddev
+Nodes which have been dropped will not contribute to the
+loss during the forward pass and therefore will also not
+participate in backpropagation. The dropout probability is a
+hyperparameter that is selected when designing the neural
+network. However, as a general rule, layers with many
+parameters may benefit more from a higher dropout
+probability. At least one node must be active.
+
+During training, the output of the layer is attenuated due
+to the dropped out nodes. However, during prediction, the
+entire set of nodes are used. This results in a change of
+scale for the layer output which causes problems for
+subsequent layers. The scale can be adjusted during training
+by applying the Inverted Dropout procedure where output
+nodes are scaled as follows.
+
+	scale = total/active
+
+References
+
+* [CS231n Winter 2016: Lecture 6: Neural Networks Part 3 / Intro to ConvNets](https://www.youtube.com/watch?v=hd_KFJ5ktUc&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC&index=6)
+
+Momentum/RMSProp/Adam
+---------------------
+
+[TODO - Momentum]
+[TODO - RMSProp]
+[TODO - Adam]
+
+References
+
+* [Intro to optimization in deep learning: Momentum, RMSProp and Adam](https://blog.paperspace.com/intro-to-optimization-momentum-rmsprop-adam/)
+
+Data Augmentation
+-----------------
+
+[TODO - Data Augmentation]
+
+Cross Validation
+----------------
+
+[TODO - Cross Validation]
