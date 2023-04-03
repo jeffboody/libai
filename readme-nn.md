@@ -419,18 +419,45 @@ References
 * [Bias Initialization in a Neural Network](https://medium.com/@glenmeyerowitz/bias-initialization-in-a-neural-network-2e5d26fed0f0)
 * [3 Common Problems with Neural Network Initialization](https://towardsdatascience.com/3-common-problems-with-neural-network-initialisation-5e6cacfcd8e6)
 
-Mini Batch
+Batch Size
 ----------
 
-[TODO - Mini Batch]
+The batch size refers to the number of training patterns
+that are processed in the forward pass before the loss is
+backpropagated. In practice, two approaches are used to
+select the batch size including Stochastic Gradient Descent
+(SGD) and Mini-Batch Gradient Descent (MBGD). The SGD method
+performs a forward pass and backpropagation for each
+training pattern. MBGD performs a forward pass using
+multiple training patterns followed by a single
+backpropagation using the average loss and the average
+forward gradients. The advantages of each approach includes
+the following.
 
-	- SGD vs Batch vs Mini Batch
-	- batch size is a hyperparameter
-	- default batch size of 32
+Stochastic Gradient Descent
+
+* Simplest to implement
+* Less memory is required
+
+Mini-Batch Gradient Descent
+
+* Mini-batch is typically the preferred method
+* Backpropagation is amortized across the mini-batch
+* Smoother gradients results in more stable convergence
+* Implementations may vectorize code across mini-batches
+* Batch Normalization may further improve convergence
+
+The batch size is a hyperparameter that is selected when
+designing the neural network. It was suggested that a good
+default mini-batch size is 32. It may also be possible to
+increase the batch size over time as this reduces the
+variance in the gradients when approaching a minimal
+solution.
 
 References
 
 * [A Gentle Introduction to Mini-Batch Gradient Descent and How to Configure Batch Size](https://machinelearningmastery.com/gentle-introduction-mini-batch-gradient-descent-configure-batch-size/)
+* [Variable batch-size in mini-batch gradient descent](https://www.reddit.com/r/MachineLearning/comments/481f2v/variable_batchsize_in_minibatch_gradient_descent/)
 
 Batch Normalization
 -------------------
@@ -450,7 +477,15 @@ Add a small epsilon to avoid divide-by-zero problems.
 The mean and standard deviation are calculated during
 training from the mini batch. Running averages of these
 values are also calculated during the training which are
-subsequently used when making predictions.
+subsequently used when making predictions. The exponential
+average momentium (e.g. 0.99) is a hyperparameter that is
+selected when designing the neural network.
+
+	avg_mean   = avg_mean*momentum + batch_mean*(1 - momentum)
+	avg_stddev = avg_stddev*momentum + batch_stddev*(1 - momentum)
+
+Why are the batch mean and standard deviation used during
+training rather than the running averages?
 
 Note that the neural network may learn the identity
 operation (e.g. beta is the mean and gamma is the inverse of
@@ -481,6 +516,7 @@ References
 * [Batch normalization: What it is and how to use it](https://www.youtube.com/watch?v=yXOMHOpbon8)
 * [CS231n Winter 2016: Lecture 5: Neural Networks Part 2](https://www.youtube.com/watch?v=gYpoJMlgyXA&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC&index=5)
 * [L2 Regularization versus Batch and Weight Normalization](https://arxiv.org/pdf/1706.05350.pdf)
+* [Moving average in Batch Normalization](https://jiafulow.github.io/blog/2021/01/29/moving-average-in-batch-normalization/)
 
 L1/L2 Regularization
 --------------------
@@ -592,7 +628,17 @@ References
 Data Augmentation
 -----------------
 
-[TODO - Data Augmentation]
+The size of a training set may be artifically increased
+through the use of various data augmentation techniques to
+help reduce overfitting and increase generalization.
+
+For example, facial recognition may benefit by flipping
+faces horizontally when they are lit from different
+directions.
+
+References
+
+* [A Complete Guide to Data Augmentation](https://www.datacamp.com/tutorial/complete-guide-data-augmentation)
 
 Cross Validation
 ----------------
