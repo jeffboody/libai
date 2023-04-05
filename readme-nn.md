@@ -63,7 +63,7 @@ rely on regularization techniques to address the overfitting
 problem. Regularization techniques cause the neural network
 to produce generalized solutions rather than memorizing
 training patterns (e.g. patterns not observed in test data)
-or learing of an embedded noise signal. In practice, the
+or learning of an embedded noise signal. In practice, the
 capacity of a neural network may be limited by physical
 computing resources.
 
@@ -339,33 +339,6 @@ References
 * [Activation Functions in Neural Networks](https://towardsdatascience.com/activation-functions-neural-networks-1cbd9f8d91d6)
 * [How to Choose an Activation Function for Deep Learning](https://machinelearningmastery.com/choose-an-activation-function-for-deep-learning/)
 
-Data Centering and Scaling
---------------------------
-
-Data centering and scaling should be performed on the input
-layer on a per-channel (i) basis to normalize the data to
-zero mean and unit variance. When the input layer contains
-images it's common to perform the zero mean but skip the
-unit variance. It may also be beneficial to perform data
-centering and scaling on a per-image basis rather than
-per-channel (e.g. face recognition). Data whitening may also
-be applied by performing PCA and transforming the covariance
-matrix to the identity matrix.
-
-	Yi = (Xi - Mean(Xi))/StdDev(Xi)
-
-Add a small epsilon to avoid divide-by-zero problems.
-
-This transformation improves the learing/convergence rate by
-avoiding the well known zig-zag pattern where the gradient
-descent trajectory oscilates back and forth along one
-dimension.
-
-References
-
-* [Batch Norm Explained Visually - How it works, and why neural networks need it](https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739)
-* [CS231n Winter 2016: Lecture 5: Neural Networks Part 2](https://www.youtube.com/watch?v=gYpoJMlgyXA&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC&index=5)
-
 Parameter Initialization
 ------------------------
 
@@ -418,6 +391,33 @@ References
 * [Initializing neural networks](https://www.deeplearning.ai/ai-notes/initialization/index.html)
 * [Bias Initialization in a Neural Network](https://medium.com/@glenmeyerowitz/bias-initialization-in-a-neural-network-2e5d26fed0f0)
 * [3 Common Problems with Neural Network Initialization](https://towardsdatascience.com/3-common-problems-with-neural-network-initialisation-5e6cacfcd8e6)
+
+Data Centering and Scaling
+--------------------------
+
+Data centering and scaling should be performed on the input
+layer on a per-channel (i) basis to normalize the data to
+zero mean and unit variance. When the input layer contains
+images it's common to perform the zero mean but skip the
+unit variance. It may also be beneficial to perform data
+centering and scaling on a per-image basis rather than
+per-channel (e.g. face recognition). Data whitening may also
+be applied by performing PCA and transforming the covariance
+matrix to the identity matrix.
+
+	Yi = (Xi - Mean(Xi))/StdDev(Xi)
+
+Add a small epsilon to avoid divide-by-zero problems.
+
+This transformation improves the learning/convergence rate by
+avoiding the well known zig-zag pattern where the gradient
+descent trajectory oscilates back and forth along one
+dimension.
+
+References
+
+* [Batch Norm Explained Visually - How it works, and why neural networks need it](https://towardsdatascience.com/batch-norm-explained-visually-how-it-works-and-why-neural-networks-need-it-b18919692739)
+* [CS231n Winter 2016: Lecture 5: Neural Networks Part 2](https://www.youtube.com/watch?v=gYpoJMlgyXA&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC&index=5)
 
 Batch Size
 ----------
@@ -518,6 +518,142 @@ References
 * [L2 Regularization versus Batch and Weight Normalization](https://arxiv.org/pdf/1706.05350.pdf)
 * [Moving average in Batch Normalization](https://jiafulow.github.io/blog/2021/01/29/moving-average-in-batch-normalization/)
 
+Learning Rate
+-------------
+
+The learning rate is arguably the most important
+hyperparameter that affects how fast the gradient descent
+converges. Large learning rates can cause the gradient
+descent to become unstable leading to a failure to converge.
+On the other hand, small learning rates may cause the
+gradient descent to converge slowly or get trapped in local
+minima.
+
+Variable learning rates may be achieved by using a high
+learning rate in the beginning while slowly decreasing the
+learning rate after each epoch. The learning rate typically
+starts in the range of 0.01 and 0.001. The following
+adaptive techniques have also been proposed to adjust the
+effective learning rate for faster convergence.
+
+* Momentium Update
+* RMSProp
+* Adam, AdamW and ND-Adam
+* Cyclical Learning Rates
+
+The learning rate is also impacted by L2 regularization when
+combined with Batch Normalization. The L2 regularization
+technique may also be used in conjunction with the adaptive
+techniques listed above (except AdamW).
+
+References
+
+* [CS231n Winter 2016: Lecture 6: Neural Networks Part 3 / Intro to ConvNets](https://www.youtube.com/watch?v=hd_KFJ5ktUc&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC)
+* [A Visual Explanation of Gradient Descent Methods (Momentum, AdaGrad, RMSProp, Adam)](https://towardsdatascience.com/a-visual-explanation-of-gradient-descent-methods-momentum-adagrad-rmsprop-adam-f898b102325c)
+
+Momentium Update
+----------------
+
+The momentium update is a per parameter adaptive technique
+that changes the update by including an exponentially
+decaying velocity term. When successive updates are
+performed in the same direction, the velocity term picks up
+speed and increases the effective learning rate.
+Alternatively, when successive updates are performed in
+opposite directions (e.g. oscilation) the velocity is
+dampened (e.g. friction). The increased velocity can cause
+the update to escape a local minima and power through
+plateaus. On the other hand, it may overshoot a desired
+minimum and will need to backtrack to reach the minimum.
+
+Recall that the backpropagation update is the following.
+
+	wi = wi - gamma*dL/dwi
+
+The momentium update is the following.
+
+	vi = mu*vi - gamma*dL/dwi
+	wi = wi + vi
+
+The decay rate (mu) is a hyperparameter that is selected
+when designing the neural network. Typical values for the
+decay rate are 0.5, 0.9 or 0.99. The decay rate may be
+varied over epochs starting from a value of 0.5.
+
+The Nesterov momentium update is an improved update which
+uses the "lookahead" gradient for faster convergence rates
+as follows.
+
+	v0i = v1i
+	v1i = mu*v0i - gamma*dL/dwi
+	wi  = wi - mu*v0i + (1 + mu)*v1i
+
+References
+
+* [CS231n Winter 2016: Lecture 6: Neural Networks Part 3 / Intro to ConvNets](https://www.youtube.com/watch?v=hd_KFJ5ktUc&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC)
+* [A Visual Explanation of Gradient Descent Methods (Momentum, AdaGrad, RMSProp, Adam)](https://towardsdatascience.com/a-visual-explanation-of-gradient-descent-methods-momentum-adagrad-rmsprop-adam-f898b102325c)
+
+RMSProp Update
+--------------
+
+The RMSProp (Root Mean Square Propagation) update is another
+per parameter adaptive technique that scales the update step
+size by the square root of an exponentially decaying
+gradient scaled term. When successive updates are performed
+using large gradients, the update step size is scaled down.
+Alternatively, when successive updates are performed using
+small gradients, the update step size is scaled up. As a
+result, the scaling term reduces the zig-zag pattern by
+normalizing the update step size such that we can proceed
+directly towards the local minimum.
+
+Recall that the backpropagation update is the following.
+
+	wi = wi - gamma*dL/dwi
+
+The RMSProp update is the following.
+
+	g2i = nu*g2i + (1 - nu)*(dL/dwi)^2
+	wi  = wi - gamma*(dL/dwi)/sqrt(g2i)
+
+The decay rate (nu) is a hyperparameter that is selected
+when designing the neural network and is typically set to
+0.99.
+
+Add a small epsilon to avoid divide-by-zero problems.
+
+References
+
+* [CS231n Winter 2016: Lecture 6: Neural Networks Part 3 / Intro to ConvNets](https://www.youtube.com/watch?v=hd_KFJ5ktUc&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC)
+* [A Visual Explanation of Gradient Descent Methods (Momentum, AdaGrad, RMSProp, Adam)](https://towardsdatascience.com/a-visual-explanation-of-gradient-descent-methods-momentum-adagrad-rmsprop-adam-f898b102325c)
+
+Adam, AdamW and ND-Adam
+-----------------------
+
+[TODO - Adam]
+
+References
+
+* [Decoupled Weight Decay Regularization](https://arxiv.org/pdf/1711.05101.pdf)
+* [Adam - latest trends in deep learning optimization.](https://towardsdatascience.com/adam-latest-trends-in-deep-learning-optimization-6be9a291375c)
+* [Why AdamW matters](https://towardsdatascience.com/why-adamw-matters-736223f31b5d)
+
+Cyclical Learning Rate
+----------------------
+
+The cyclical learning rate procedure claims that it's best
+to use a triangle learning rate policy where the learning
+rate varies between a bounds. A key aspect of their claims
+is that a high learning rate might have a short term
+negative effect yet lead to a longer term beneficial effect.
+Their policy helps to eliminate the guesswork in selecting
+the learning rate manually, is easy to implement and does
+not require additional computation expense.
+
+References
+
+* [Cyclical Learning Rates for Training Neural Networks](https://arxiv.org/pdf/1506.01186.pdf)
+
 L1/L2 Regularization
 --------------------
 
@@ -556,7 +692,7 @@ term is a regularization hyperparameter (0 to 1) that is
 selected when designing the neural network.
 
 To explain how regularization works in the absense of
-normalization, lets consider how the L2 regularization term
+normalization, let's consider how the L2 regularization term
 affects the following example.
 
 	X  = [1,1,1,1]
@@ -613,17 +749,6 @@ nodes are scaled as follows.
 References
 
 * [CS231n Winter 2016: Lecture 6: Neural Networks Part 3 / Intro to ConvNets](https://www.youtube.com/watch?v=hd_KFJ5ktUc&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC&index=6)
-
-Momentum/RMSProp/Adam
----------------------
-
-[TODO - Momentum]
-[TODO - RMSProp]
-[TODO - Adam]
-
-References
-
-* [Intro to optimization in deep learning: Momentum, RMSProp and Adam](https://blog.paperspace.com/intro-to-optimization-momentum-rmsprop-adam/)
 
 Data Augmentation
 -----------------
