@@ -478,7 +478,7 @@ The mean and standard deviation are calculated during
 training from the mini batch. Running averages of these
 values are also calculated during the training which are
 subsequently used when making predictions. The exponential
-average momentium (e.g. 0.99) is a hyperparameter that is
+average momentum (e.g. 0.99) is a hyperparameter that is
 selected when designing the neural network.
 
 	avg_mean   = avg_mean*momentum + batch_mean*(1 - momentum)
@@ -536,7 +536,7 @@ starts in the range of 0.01 and 0.001. The following
 adaptive techniques have also been proposed to adjust the
 effective learning rate for faster convergence.
 
-* Momentium Update
+* Momentum Update
 * RMSProp
 * Adam, AdamW and ND-Adam
 * Cyclical Learning Rates
@@ -551,10 +551,10 @@ References
 * [CS231n Winter 2016: Lecture 6: Neural Networks Part 3 / Intro to ConvNets](https://www.youtube.com/watch?v=hd_KFJ5ktUc&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC)
 * [A Visual Explanation of Gradient Descent Methods (Momentum, AdaGrad, RMSProp, Adam)](https://towardsdatascience.com/a-visual-explanation-of-gradient-descent-methods-momentum-adagrad-rmsprop-adam-f898b102325c)
 
-Momentium Update
-----------------
+Momentum Update
+---------------
 
-The momentium update is a per parameter adaptive technique
+The momentum update is a per parameter adaptive technique
 that changes the update by including an exponentially
 decaying velocity term. When successive updates are
 performed in the same direction, the velocity term picks up
@@ -570,7 +570,7 @@ Recall that the backpropagation update is the following.
 
 	wi = wi - gamma*dL/dwi
 
-The momentium update is the following.
+The momentum update is the following.
 
 	vi = mu*vi - gamma*dL/dwi
 	wi = wi + vi
@@ -580,7 +580,7 @@ when designing the neural network. Typical values for the
 decay rate are 0.5, 0.9 or 0.99. The decay rate may be
 varied over epochs starting from a value of 0.5.
 
-The Nesterov momentium update is an improved update which
+The Nesterov momentum update is an improved update which
 uses the "lookahead" gradient for faster convergence rates
 as follows.
 
@@ -630,13 +630,26 @@ References
 Adam, AdamW and ND-Adam
 -----------------------
 
-[TODO - Adam]
+The Adam update is another per-parameter adaptive technique
+known as "Adaptive Moment Estimation" which combines
+features from the momentum and RMSProp update techniques.
+The momentum component increases the overall speed while
+the RMSProp component normalizes the gradient scale in
+different directions. The design of the original Adam
+algorithm includes a L2 regularizaion term, however, it was
+discovered that the term was placed incorrectly. As a
+result, the original Adam algorithm failed to generalize
+well leading to suboptimal solutions. AdamW and ND-Adam were
+proposed to address the shortcomings of Adam, however, it's
+unclear these improvements can supplant SGD+Momentum+L2
+Regularization in practice.
 
 References
 
-* [Decoupled Weight Decay Regularization](https://arxiv.org/pdf/1711.05101.pdf)
-* [Adam - latest trends in deep learning optimization.](https://towardsdatascience.com/adam-latest-trends-in-deep-learning-optimization-6be9a291375c)
 * [Why AdamW matters](https://towardsdatascience.com/why-adamw-matters-736223f31b5d)
+* [Fixing Weight Decay Regularization in Adam](https://arxiv.org/pdf/1711.05101v2.pdf)
+* [Decoupled Weight Decay Regularization](https://arxiv.org/pdf/1711.05101.pdf)
+* [Normalized Direction-Preserving Adam](https://arxiv.org/pdf/1709.04546.pdf)
 
 Cyclical Learning Rate
 ----------------------
