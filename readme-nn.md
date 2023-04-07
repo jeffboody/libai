@@ -4,15 +4,44 @@ Neural Network
 Introduction
 ------------
 
-An artificial neural network is an algorithm that learns to
-solve complex problems by performing a gradient descent
-optimization across a function graph. Neural networks may be
-applied to solve a wide range of problems such as linear
-regression, non-linear prediction, classification,
-segmentation, noise removal, natural language translation,
-interactive conversation and text-to-image synthesis. Many
-different types of neural networks exist such as the
-following.
+An artificial neural network is an iterative algorithm that
+learns to solve complex problems by performing a gradient
+descent optimization to minimize a loss function with
+respect to set of training patterns.
+
+[TODO - SUMMARY]
+(e.g. the method of steepest descent)
+* artifical neural network
+* gradient descent
+* minimize a loss function
+* computation graph
+* parameters
+* hyperparameters
+* backpropagation
+* perceptron/neuron/activation function
+* optimization
+	- Batch Normalization
+	- Data Centering and Scaling
+	- Momentum Update
+	- Learning Rate
+	- Regularization
+	- Hyperparameter Tuning
+
+Neural networks have be applied to solve a wide range of
+problems such as the following.
+
+* Linear Regression
+* Non-Linear Prediction
+* Classification
+* Segmentation
+* Noise Removal
+* Natural Language Translation
+* Interactive Conversation
+* Text-to-Image Synthesis
+
+Many different neural network architectures have been
+developed which are specialized to handle different problem
+types. Some notable examples include the following.
 
 * Fully Connected Neural Networks (FCNN)
 * Convolutional Neural Networks (CNN)
@@ -21,90 +50,86 @@ following.
 * Variational Autoencoder Neural Networks (VAE)
 * Generative Adversarial Networks (GAN)
 
-[TODO - SUMMARY]
+The sections below will describe the components, algorithms
+and optimization techniques involved in the development of
+artificial neural networks.
 
 References
 
 * [CS231n Winter 2016](https://www.youtube.com/playlist?list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC)
 
-Gradient Descent
-----------------
+Gradient Descent Optimization
+-----------------------------
 
-[TODO - Gradient Descent/Stocastic Gradient Descent - SGD]
-	- mountain analogy
-	- iterative
-	- differentiable functions
-	- multi-dimensional
-	- learning rate (variable)
-	---
-	- zig-zag pattern
-	- local minima
-	- saddle point
-	- slow convergence
-	- mini batch (reduces variance)
-	- Centering and Scaling Data
-	- Momentum, RMSProp, Adam, etc.
-	---
-	- Batch Normalization
-	- vanishing/exploding gradient
-	---
-	- overfitting/underfitting
-	- regularization
-	- weight decay
-	- capacity
+The gradient descent optimization is also known as the
+method of steepest descent and can be described using a
+mountain analogy. Let's consider how one might navigate
+down a mountain with limited visibility due to fog. We can
+quickly observe the surrounding area to estimate the slope
+of the mountain at our location (e.g. evaluate the gradient
+of a differentiable function) and take a step in direction
+of steepest descent. However, when the fog is heavy it may
+take some time to estimate the slope of the mountain in our
+surrounding area. As a result, we may choose to move some
+distance in the last known direction of steepest descent
+(e.g. momentium). In some cases, this heuristic may also
+cause us to move a short distance in the wrong direction.
+However, the expectation is that this method is still faster
+due to the reduced time spent estimating the mountain slope.
+After repeating this process enough times we hope to reach
+the base of the mountain.
 
-Several issues related to capacity will be discussed in the
-regularization section. However, it's very difficult to know
-the amount of capacity required to solve complex problems.
-Too little capacity can lead to underfitting and too much
-capacity can lead to overfitting. In general, we wish to
-have more capacity than is required solve a problem then
-rely on regularization techniques to address the overfitting
-problem. Regularization techniques cause the neural network
-to produce generalized solutions rather than memorizing
-training patterns (e.g. patterns not observed in test data)
-or learning of an embedded noise signal. In practice, the
-capacity of a neural network may be limited by physical
-computing resources.
+While this procedure is conceptually simple there are a
+number of challanges to implementing the gradient descent
+optimization in practice. In particular, we may end up
+traversing to a local minima (e.g. a lake), a saddle (e.g. a
+flat spot) or a gulch (e.g. zig-zag traversal).
+These scenarios can cause the method of steepest descent to
+converge slowly or get stuck in a suboptimal local minimum.
+Many of the sections below are dedicated to specialized
+techniques that are designed to address problems such as
+these.
 
-Function Graph
---------------
+Computation Graph
+-----------------
 
-The function graph is an directed acyclic graph (DAG) that
+Neural networks may be represented by a computation graph.
+A computation graph is an directed acyclic graph (DAG) that
 consists of many nodes, each of which implements a function
 in the form of Y = f(X,W) that can solve a fragment of the
-larger problem. The inputs and outputs to the functions may
-be multi-dimensional arrays known as tensors. The parameters
-(W) are trained or learned via the gradient descent
-optimization. The functions implemented by each node may be
-specialized for solving particular tasks.
+larger problem. The inputs (X), parameters (W) and outputs
+(Y) for the functions may be multi-dimensional arrays known
+as tensors. The parameters are trained or learned via the
+gradient descent optimization. Additional model parameters
+known as hyperparameters are also specified as part of the
+neural network architecture (e.g. learning rate).
 
 Nodes are typically organized into layers of similar
-functions where the output of one layer is fed into the
-input of the next layer. Early neural network architectures
-were fully connected such that every output of one layer
-was connected to every input of the next layer. In 2012, a
-major innovation was introduced by the AlexNet architecture
-which demonstrated how to use sparsely connected layers of
-convolutional nodes to greatly improve image classification
-tasks. As the number of layers (e.g. the neural network
-depth) and nodes increases, so does the capacity of a neural
-network to solve more complicated problems. Example layers
-include the following.
+functions (e.g. specialized for a particular task) where the
+output of one layer is fed into the input of the next layer.
+Early neural network architectures were fully connected such
+that every output of one layer was connected to every input
+of the next layer. In 2012, a major innovation was
+introduced by the AlexNet architecture which demonstrated
+how to use sparsely connected layers of convolutional nodes
+to greatly improve image classification tasks.
 
-* Perceptron
-* Activation
-* Batch Normalization
-* Convolution
-* Pooling
-* Flattening
+As the number of layers (e.g. the neural network depth) and
+nodes increases, so does the capacity of a neural network to
+solve more complicated problems. However, it's very
+difficult to know the amount of capacity required to solve
+complex problems. Too little capacity can lead to
+underfitting and too much capacity can lead to overfitting.
+In general, we wish to have more capacity than is required
+solve a problem then rely on regularization techniques to
+address the overfitting problem.
 
-The following function graph shows a simple neural network
-with two inputs X = [x1,x2] (e.g. input layer), two nodes in
-the first layer [Node11,Node12] (e.g. hidden layer), two
-nodes in the second layer [Node21,Node22] (e.g. output
-layer) and two outputs Y = [y1,y2]. The neural network
-implements Y = f(X,W) in terms of the node functions
+The following computation graph shows a simple neural
+network with two inputs X = [x1,x2] (e.g. input layer), two
+nodes in the first layer [Node11,Node12] (e.g. hidden
+layer), two nodes in the second layer [Node21,Node22] (e.g.
+output layer) and two outputs Y = [y1,y2]. The neural
+network implements Y = f(X,W) in terms of the node functions
 f = [f1,f2] and the parameters W = [W11,W12,W21,W22]. Each
 parameter variable may represent an array with zero or more
 elements.
@@ -116,13 +141,13 @@ Forward Pass
 
 A forward pass is performed on the neural network to make a
 prediction given some input and simply involves evaluating
-functions in the function graph from the input to the
+functions in the computation graph from the input to the
 output.
 
 Backpropagation
 ---------------
 
-The backpropagation procedure implements the gradient
+The backpropagation algorithm implements the gradient
 descent optimization to learn the function parameters by
 minimizing a loss function with respect to the predicted
 output (Y) and the desired training output (Yt).
@@ -132,11 +157,12 @@ output (Y) and the desired training output (Yt).
 The gradient descent opmization states that the function
 parameters may be updated to minimize the loss by
 subtracting the gradient of the loss with respect to each
-function parameter. The learning rate (gamma) is a
-hyperparameter that is selected when designing the neural
-network.
+function parameter.
 
 	wi -= gamma*dL/dwi
+
+The learning rate (gamma) is a hyperparameter and it was
+suggested that a good default is 0.01.
 
 Recall that the loss function is defined in terms of the
 predicted output and desired training output so it's not
@@ -152,7 +178,7 @@ dependent variables x, y and z as follows.
 
 The following gradients may be computed during the forward
 pass (i.e. the forward gradients) which will be cached for
-use by the backpropagation procedure.
+use by the backpropagation algorithm.
 
 	dy/dxi = df(X,W)/dxi
 	dy/dwi = df(X,W)/dwi
@@ -172,7 +198,7 @@ loss gradient, the forward gradients and the chain rule.
 
 	dL/dxi = (dL/dy)*(dy/dxi)
 
-In summary, the backpropagation procedure may be applied by
+In summary, the backpropagation algorithm may be applied by
 repeating the following steps for each training pattern.
 
 * Forward Pass
@@ -182,8 +208,8 @@ repeating the following steps for each training pattern.
 * Update Parameters
 * Backpropagate Loss
 
-The following function graph shows the backpropagation
-procedure using our example from earlier.
+The following computation graph shows the backpropagation
+algorithm using our example from earlier.
 
 ![Neural Network Backpropagation](docs/nn-backprop.jpg?raw=true "Neural Network Backpropagation")
 
@@ -194,13 +220,13 @@ References
 Loss Function
 -------------
 
-The loss function is a hyperparameter that is selected when
-designing the neural network and the choice of loss function
-depends upon the type of problem that the neural network is
-solving. The two main types of problems are regression and
-classification. Regression problems consist of predicting a
-real value quantity while classification problems consist of
-classifying a pattern in terms of one or more classes.
+The loss function is a hyperparameter and the choice of loss
+function depends upon the type of problem that the neural
+network is solving. The two main types of problems are
+regression and classification. Regression problems consist
+of predicting a real value quantity while classification
+problems consist of classifying a pattern in terms of one or
+more classes.
 
 The Mean Squared Error (MSE) and Mean Absolute Error (MAE)
 are the most commonly used loss functions for regression
@@ -241,16 +267,16 @@ activation function.
 
 The weights (w) and the bias (b) are the parameters that
 are learned by the neural network while the activation
-function is a hyperparameter that is selected when
-designing the neural network.
+function is a hyperparameter.
 
-The following function graph shows the perceptron which can
-most easily be visualized as a compound node.
+The following computation graph shows the perceptron which
+can be visualized as a compound node consisting of a
+weighted sum and a separate activation function.
 
 ![Perceptron](docs/nn-perceptron.jpg?raw=true "Perceptron")
 
-The following function graph shows the backpropagation
-procedure for the perceptron node. Note that the activation
+The following computation graph shows the backpropagation
+algorithm for the perceptron node. Note that the activation
 function does not include any function parameters so the
 update step may be skipped. The perceptron node
 implementation may also choose to combine the compound node
@@ -343,11 +369,12 @@ Parameter Initialization
 ------------------------
 
 The perceptron weights must be initalized correctly to
-ensure that the gradient descent procedure works properly.
-Incorrect weight initialization can lead to several problems
-including the symmetry problem (e.g. weights initialized to
-zero resulting in symmetric partial derivatives), slow
-learning and divergence (e.g. the output grows to infinity).
+ensure that the gradient descent optimization works
+properly. Incorrect weight initialization can lead to
+several problems including the symmetry problem (e.g.
+weights initialized to zero resulting in symmetric partial
+derivatives), slow learning and divergence (e.g. the output
+grows to infinity).
 
 The following perceptron weight initialization methods are
 recommended depending on the desired activation function.
@@ -447,12 +474,10 @@ Mini-Batch Gradient Descent
 * Implementations may vectorize code across mini-batches
 * Batch Normalization may further improve convergence
 
-The batch size is a hyperparameter that is selected when
-designing the neural network. It was suggested that a good
-default mini-batch size is 32. It may also be possible to
-increase the batch size over time as this reduces the
-variance in the gradients when approaching a minimal
-solution.
+The batch size is a hyperparameter and it was suggested that
+a good default is 32. It may also be possible to increase
+the batch size over time as this reduces the variance in the
+gradients when approaching a minimal solution.
 
 References
 
@@ -478,8 +503,8 @@ The mean and standard deviation are calculated during
 training from the mini batch. Running averages of these
 values are also calculated during the training which are
 subsequently used when making predictions. The exponential
-average momentum (e.g. 0.99) is a hyperparameter that is
-selected when designing the neural network.
+average momentum is a hyperparameter and it was suggested
+that a good default is 0.99.
 
 	avg_mean   = avg_mean*momentum + batch_mean*(1 - momentum)
 	avg_stddev = avg_stddev*momentum + batch_stddev*(1 - momentum)
@@ -536,7 +561,7 @@ starts in the range of 0.01 and 0.001. The following
 adaptive techniques have also been proposed to adjust the
 effective learning rate for faster convergence.
 
-* Momentum Update
+* Momentum
 * RMSProp
 * Adam, AdamW and ND-Adam
 * Cyclical Learning Rates
@@ -575,10 +600,10 @@ The momentum update is the following.
 	vi = mu*vi - gamma*dL/dwi
 	wi = wi + vi
 
-The decay rate (mu) is a hyperparameter that is selected
-when designing the neural network. Typical values for the
-decay rate are 0.5, 0.9 or 0.99. The decay rate may be
-varied over epochs starting from a value of 0.5.
+The decay rate (mu) is a hyperparameter and it was suggested
+that good defaults are 0.5, 0.9 or 0.99. The decay rate may
+be varied across epochs beginning from a value of 0.5 while
+slowly increasing towards 0.99.
 
 The Nesterov momentum update is an improved update which
 uses the "lookahead" gradient for faster convergence rates
@@ -616,9 +641,8 @@ The RMSProp update is the following.
 	g2i = nu*g2i + (1 - nu)*(dL/dwi)^2
 	wi  = wi - gamma*(dL/dwi)/sqrt(g2i)
 
-The decay rate (nu) is a hyperparameter that is selected
-when designing the neural network and is typically set to
-0.99.
+The decay rate (nu) is a hyperparameter and it was
+suggested that a good default is 0.99.
 
 Add a small epsilon to avoid divide-by-zero problems.
 
@@ -627,8 +651,8 @@ References
 * [CS231n Winter 2016: Lecture 6: Neural Networks Part 3 / Intro to ConvNets](https://www.youtube.com/watch?v=hd_KFJ5ktUc&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC)
 * [A Visual Explanation of Gradient Descent Methods (Momentum, AdaGrad, RMSProp, Adam)](https://towardsdatascience.com/a-visual-explanation-of-gradient-descent-methods-momentum-adagrad-rmsprop-adam-f898b102325c)
 
-Adam, AdamW and ND-Adam
------------------------
+Adam, AdamW and ND-Adam Update
+------------------------------
 
 The Adam update is another per-parameter adaptive technique
 known as "Adaptive Moment Estimation" which combines
@@ -654,7 +678,7 @@ References
 Cyclical Learning Rate
 ----------------------
 
-The cyclical learning rate procedure claims that it's best
+The cyclical learning rate algorithm claims that it's best
 to use a triangle learning rate policy where the learning
 rate varies between a bounds. A key aspect of their claims
 is that a high learning rate might have a short term
@@ -696,13 +720,13 @@ Loss Function with L2 Regularization
 	dLR/dwi = dL/dwi + 2*lambda*wi
 
 Keep in mind that the regularization term affects the
-backpropagation procedure by adding an additional term to
+backpropagation algorithm by adding an additional term to
 the update parameter step since dL/dwi is replaced by
 dLR/dwi. Some results also suggest that the regularization
 term is not required for the perceptron bias parameter since
 it does not seem to impact the final result. The lambda
-term is a regularization hyperparameter (0 to 1) that is
-selected when designing the neural network.
+term is a regularization hyperparameter and it was suggested
+that a good default is 0.01.
 
 To explain how regularization works in the absense of
 normalization, let's consider how the L2 regularization term
@@ -737,24 +761,24 @@ Dropout is a regularization technique that may be applied to
 a neural network layer where a subset of nodes may be
 randomly disabled. Regularization is achieved through the
 reduction in capacity which forces the neural network to
-increase generalization. The dropout procedure may also be
+increase generalization. The dropout algorithm may also be
 viewed as selecting a random layer from a large ensemble of
 layers that share parameters.
 
 Nodes which have been dropped will not contribute to the
 loss during the forward pass and therefore will also not
 participate in backpropagation. The dropout probability is a
-hyperparameter that is selected when designing the neural
-network. However, as a general rule, layers with many
-parameters may benefit more from a higher dropout
-probability. At least one node must be active.
+hyperparameter and it was suggested that a good default is
+0.5. However, as a general rule, layers with many parameters
+may benefit more from a higher dropout probability. At least
+one node must be active.
 
 During training, the output of the layer is attenuated due
 to the dropped out nodes. However, during prediction, the
 entire set of nodes are used. This results in a change of
 scale for the layer output which causes problems for
 subsequent layers. The scale can be adjusted during training
-by applying the Inverted Dropout procedure where output
+by applying the Inverted Dropout algorithm where output
 nodes are scaled as follows.
 
 	scale = total/active
@@ -778,7 +802,55 @@ References
 
 * [A Complete Guide to Data Augmentation](https://www.datacamp.com/tutorial/complete-guide-data-augmentation)
 
-Cross Validation
-----------------
+Hyperparameter Tuning
+---------------------
 
-[TODO - Cross Validation]
+There are many types of hyperparameters that must be
+determined when designing the neural network such as the
+following.
+
+* Learning Rate
+* Exponential Decay Rates
+* Regularization Rates
+* Loss Function
+* Activation Functions
+* Batch Size
+* Layer Types
+* Network Capacity (e.g. Node/Filter/Layer Count)
+
+The selection of hyperparameters is a challanging problem
+because an exaustive search of the hyperparameter space
+leads to a combinatorial explosion. The search algorithm may
+also be limited in terms of the processing resources
+required to validate each selection of hyperparameters. As
+such, it is not possible to exahaustively validate all
+choices of hyperparameters. One commonly used approach to
+tackle this problem is to perform a random search across the
+range of potential hyperparameter values to see which ones
+provide the lowest loss. Additional experiments may be
+performed to zero in on the best hyperparameters by making
+educated guesses as to which parameters need further
+optimization.
+
+The cross-validation technique may also be applied to
+determine how well the model generalizes across different
+training sets. In this case, the training set is divided
+into folds (e.g. a 5-fold traiing set) and the training
+algorithm is performed on each fold. The mean and variance
+of the loss may be analyzed (see Yerrorlines in gnuplot) to
+determine the optimal hyperparameter values and to determine
+how well the model generalizes.
+
+More advanced techniques that should be considered in the
+future include Bayesian Optimization, Tree Parzen
+Estimators (TPEs), Covariance Matrix Adaptation Evolution
+Strategy (CMA-ES) and population based training techniques
+(e.g. genetic algorithms).
+
+References
+
+* [CS231n Winter 2016: Lecture 2: Data-driven approach, kNN, Linear Classification 1](https://www.youtube.com/watch?v=8inugqHkfvE&list=PLkt2uSq6rBVctENoVBg1TpCC7OQi31AlC)
+* [Algorithms for Hyper-Parameter Optimization](https://proceedings.neurips.cc/paper/2011/file/86e8f7ab32cfd12577bc2619bc635690-Paper.pdf)
+* [Hyper-Parameter Optimization: A Review of Algorithms and Applications](https://arxiv.org/pdf/2003.05689.pdf)
+* [CMA-ES for Hyperparameter Optimization of Deep Neural Networks](https://arxiv.org/pdf/1604.07269.pdf)
+* [gnuplot 5.4](http://www.gnuplot.info/docs_5.4/Gnuplot_5_4.pdf)
