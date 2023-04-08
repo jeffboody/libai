@@ -4,28 +4,10 @@ Neural Network
 Introduction
 ------------
 
-An artificial neural network is an iterative algorithm that
-learns to solve complex problems by performing a gradient
-descent optimization to minimize a loss function with
-respect to set of training patterns.
-
-[TODO - SUMMARY]
-(e.g. the method of steepest descent)
-* artifical neural network
-* gradient descent
-* minimize a loss function
-* computation graph
-* parameters
-* hyperparameters
-* backpropagation
-* perceptron/neuron/activation function
-* optimization
-	- Batch Normalization
-	- Data Centering and Scaling
-	- Momentum Update
-	- Learning Rate
-	- Regularization
-	- Hyperparameter Tuning
+A neural network is an iterative algorithm that learns to
+solve complex problems by performing a gradient descent
+optimization to minimize a loss function with respect to
+set of training patterns.
 
 Neural networks have be applied to solve a wide range of
 problems such as the following.
@@ -52,7 +34,7 @@ types. Some notable examples include the following.
 
 The sections below will describe the components, algorithms
 and optimization techniques involved in the development of
-artificial neural networks.
+neural networks.
 
 References
 
@@ -457,7 +439,7 @@ select the batch size including Stochastic Gradient Descent
 performs a forward pass and backpropagation for each
 training pattern. MBGD performs a forward pass using
 multiple training patterns followed by a single
-backpropagation using the average loss and the average
+backpropagation using the total loss and the total
 forward gradients. The advantages of each approach includes
 the following.
 
